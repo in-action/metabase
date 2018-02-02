@@ -72,159 +72,104 @@ const MainNavLink = ({ to, name, eventName, icon }) => (
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class Navbar extends Component {
-  static propTypes = {
-    context: PropTypes.string.isRequired,
-    path: PropTypes.string.isRequired,
-    user: PropTypes.object,
-  };
+    static propTypes = {
+        context: PropTypes.string.isRequired,
+        path: PropTypes.string.isRequired,
+        user: PropTypes.object
+    };
 
-  isActive(path) {
-    return this.props.path.startsWith(path);
-  }
+    isActive(path) {
+        return this.props.path.startsWith(path);
+    }
 
-  renderAdminNav() {
-    return (
-      <nav className={cx("Nav AdminNav sm-py1")}>
-        <div className="sm-pl4 flex align-center pr1">
-          <div className="NavTitle flex align-center">
-            <Icon name={"gear"} className="AdminGear" size={22} />
-            <span className="NavItem-text ml1 hide sm-show text-bold">{t`Metabase Admin`}</span>
-          </div>
+    renderAdminNav() {
+        return (
+            <nav className={cx("Nav AdminNav sm-py1")}>
+                <div className="sm-pl4 flex align-center pr1">
+                    <div className="NavTitle flex align-center">
+                        <Icon name={'gear'} className="AdminGear" size={22}></Icon>
+                        <span className="NavItem-text ml1 hide sm-show text-bold">{t`Metabase Admin`}</span>
+                    </div>
 
-          <ul className="sm-ml4 flex flex-full">
-            <AdminNavItem
-              name={t`Settings`}
-              path="/admin/settings"
-              currentPath={this.props.path}
-            />
-            <AdminNavItem
-              name={t`People`}
-              path="/admin/people"
-              currentPath={this.props.path}
-            />
-            <AdminNavItem
-              name={t`Data Model`}
-              path="/admin/datamodel"
-              currentPath={this.props.path}
-            />
-            <AdminNavItem
-              name={t`Databases`}
-              path="/admin/databases"
-              currentPath={this.props.path}
-            />
-            <AdminNavItem
-              name={t`Permissions`}
-              path="/admin/permissions"
-              currentPath={this.props.path}
-            />
-          </ul>
+                    <ul className="sm-ml4 flex flex-full">
+                        <AdminNavItem name="Settings"    path="/admin/settings"     currentPath={this.props.path} />
+                        <AdminNavItem name="People"      path="/admin/people"       currentPath={this.props.path} />
+                        <AdminNavItem name="Data Model"  path="/admin/datamodel"    currentPath={this.props.path} />
+                        <AdminNavItem name="Databases"   path="/admin/databases"    currentPath={this.props.path} />
+                        <AdminNavItem name="Permissions" path="/admin/permissions"  currentPath={this.props.path} />
+                    </ul>
 
-          <ProfileLink {...this.props} />
-        </div>
-      </nav>
-    );
-  }
+                    <ProfileLink {...this.props} />
+                </div>
+            </nav>
+        );
+    }
 
-  renderEmptyNav() {
-    return (
-      <nav className="Nav sm-py1 relative">
-        <ul className="wrapper flex align-center">
-          <li>
-            <Link
-              to="/"
-              data-metabase-event={"Navbar;Logo"}
-              className="NavItem cursor-pointer flex align-center"
-            >
-              <LogoIcon className="text-brand my2" />
-            </Link>
-          </li>
-        </ul>
-      </nav>
-    );
-  }
+    renderEmptyNav() {
+        return (
+            <nav className="Nav sm-py1 relative">
+                <ul className="wrapper flex align-center">
+                    <li>
+                        <Link to="/" data-metabase-event={"Navbar;Logo"} className="NavItem cursor-pointer flex align-center">
+                            <LogoIcon className="text-brand my2"></LogoIcon>
+                        </Link>
+                    </li>
+                </ul>
+            </nav>
+        );
+    }
 
-  renderMainNav() {
-    return (
-      <nav className="Nav relative bg-brand">
-        <ul className="md-pl4 flex align-center md-pr1">
-          <li>
-            <Link
-              to="/"
-              data-metabase-event={"Navbar;Logo"}
-              className="LogoNavItem NavItem cursor-pointer text-white flex align-center transition-background justify-center"
-              activeClassName="NavItem--selected"
-            >
-              <LogoIcon dark={true} />
-            </Link>
-          </li>
-          <li className="md-pl3 hide xs-show">
-            <MainNavLink
-              to="/dashboards"
-              name={t`Dashboards`}
-              eventName="Dashboards"
-              icon="dashboard"
-            />
-          </li>
-          <li className="md-pl1 hide xs-show">
-            <MainNavLink
-              to="/questions"
-              name={t`Questions`}
-              eventName="Questions"
-              icon="all"
-            />
-          </li>
-          <li className="md-pl1 hide xs-show">
-            <MainNavLink
-              to="/pulse"
-              name={t`Pulses`}
-              eventName="Pulses"
-              icon="pulse"
-            />
-          </li>
-          <li className="md-pl1 hide xs-show">
-            <MainNavLink
-              to="/reference/guide"
-              name={t`Data Reference`}
-              eventName="DataReference"
-              icon="reference"
-            />
-          </li>
-          <li className="md-pl3 hide sm-show">
-            <Link
-              to={Urls.newQuestion()}
-              data-metabase-event={"Navbar;New Question"}
-              style={BUTTON_PADDING_STYLES.newQuestion}
-              className="NavNewQuestion rounded inline-block bg-white text-brand text-bold cursor-pointer px2 no-decoration transition-all"
-            >
-              {t`New Question`}
-            </Link>
-          </li>
-          <li className="flex-align-right transition-background hide sm-show">
-            <div className="inline-block text-white">
-              <ProfileLink {...this.props} />
-            </div>
-          </li>
-        </ul>
-      </nav>
-    );
-  }
+    renderMainNav() {
+        return (
+            <nav className="Nav relative bg-brand">
+                <ul className="md-pl4 flex align-center md-pr1">
+                    <li>
+                        <Link
+                            to="/"
+                            data-metabase-event={"Navbar;Logo"}
+                            className="LogoNavItem NavItem cursor-pointer text-white flex align-center transition-background justify-center"
+                            activeClassName="NavItem--selected"
+                        >
+                            <LogoIcon dark={true}></LogoIcon>
+                        </Link>
+                    </li>
+                    <li className="md-pl3 hide xs-show">
+                        <MainNavLink to="/dashboards" name={t`Tableros`} eventName="Dashboards" icon="dashboard" />
+                    </li>
+                    <li className="md-pl1 hide xs-show">
+                        <MainNavLink to="/questions" name={t`Preguntas`} eventName="Questions" icon="all" />
+                    </li>
+                    <li className="md-pl1 hide xs-show">
+                        <MainNavLink to="/pulse" name={t`Notificaciones`} eventName="Pulses" icon="pulse" />
+                    </li>
+                    <li className="md-pl1 hide xs-show">
+                        <MainNavLink to="/reference/guide" name={t`Origenes de datos`} eventName="DataReference" icon="reference" />
+                    </li>
+                    <li className="md-pl3 hide sm-show">
+                        <Link to={Urls.newQuestion()} data-metabase-event={"Navbar;New Question"} style={BUTTON_PADDING_STYLES.newQuestion} className="NavNewQuestion rounded inline-block bg-white text-brand text-bold cursor-pointer px2 no-decoration transition-all">
+                            {t`New Question`}
+                        </Link>
+                    </li>
+                    <li className="flex-align-right transition-background hide sm-show">
+                        <div className="inline-block text-white"><ProfileLink {...this.props}></ProfileLink></div>
+                    </li>
+                </ul>
+            </nav>
+        );
+    }
 
-  render() {
-    const { context, user } = this.props;
+    render() {
+        const { context, user } = this.props;
 
-    if (!user) return null;
+        if (!user) return null;
 
-    switch (context) {
-      case "admin":
-        return this.renderAdminNav();
-      case "auth":
-        return null;
-      case "none":
-        return this.renderEmptyNav();
-      case "setup":
-        return null;
-      default:
-        return this.renderMainNav();
+        switch (context) {
+            case "admin": return this.renderAdminNav();
+            case "auth": return null;
+            case "none": return this.renderEmptyNav();
+            case "setup": return null;
+            default: return this.renderMainNav();
+        }
     }
   }
 }

@@ -1,7 +1,13 @@
 :root {
-  --brand-color: #509ee3;
-  --brand-light-color: #cde3f8;
-  --brand-saturated-color: #2d86d4;
+/* original colors
+  --brand-color: #509EE3;
+  --brand-light-color: #CDE3F8;
+  --brand-saturated-color: #2D86D4;
+*/
+
+  --brand-color: #666;
+  --brand-light-color: #ccc;
+  --brand-saturated-color: #888;  
 
   --base-grey: #f8f9fa;
   --grey-5percent: color(var(--base-grey) shade(5%));
