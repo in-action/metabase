@@ -128,16 +128,16 @@ export default class Navbar extends Component {
                         </Link>
                     </li>
                     <li className="md-pl3 hide xs-show">
-                        <MainNavLink to="/dashboards" name={t`Dashboards`} eventName="Dashboards" icon="dashboard" />
+                        <MainNavLink to="/dashboards" name={t`Tableros`} eventName="Dashboards" icon="dashboard" />
                     </li>
                     <li className="md-pl1 hide xs-show">
-                        <MainNavLink to="/questions" name={t`Questions`} eventName="Questions" icon="all" />
+                        <MainNavLink to="/questions" name={t`Preguntas`} eventName="Questions" icon="all" />
                     </li>
                     <li className="md-pl1 hide xs-show">
-                        <MainNavLink to="/pulse" name={t`Pulses`} eventName="Pulses" icon="pulse" />
+                        <MainNavLink to="/pulse" name={t`Notificaciones`} eventName="Pulses" icon="pulse" />
                     </li>
                     <li className="md-pl1 hide xs-show">
-                        <MainNavLink to="/reference/guide" name={t`Data Reference`} eventName="DataReference" icon="reference" />
+                        <MainNavLink to="/reference/guide" name={t`Origenes de datos`} eventName="DataReference" icon="reference" />
                     </li>
                     <li className="md-pl3 hide sm-show">
                         <Link to={Urls.newQuestion()} data-metabase-event={"Navbar;New Question"} style={BUTTON_PADDING_STYLES.newQuestion} className="NavNewQuestion rounded inline-block bg-white text-brand text-bold cursor-pointer px2 no-decoration transition-all">
