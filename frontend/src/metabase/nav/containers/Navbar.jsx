@@ -160,7 +160,7 @@ export default class Navbar extends Component {
           <li className="md-pl3 hide xs-show">
             <MainNavLink
               to="/dashboards"
-              name={t`Dashboards`}
+              name={t`Tableros`}
               eventName="Dashboards"
               icon="dashboard"
             />
