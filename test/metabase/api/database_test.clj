@@ -68,6 +68,7 @@
    :points_of_interest          nil
    :cache_field_values_schedule "0 50 0 * * ? *"
    :metadata_sync_schedule      "0 50 * * * ? *"
+   :options                     nil
    :timezone                    nil})
 
 (defn- db-details
@@ -148,7 +149,7 @@
 (def ^:private default-table-details
   {:description             nil
    :entity_name             nil
-   :entity_type             nil
+   :entity_type             "entity/GenericTable"
    :caveats                 nil
    :points_of_interest      nil
    :visibility_type         nil
@@ -156,22 +157,23 @@
    :show_in_getting_started false})
 
 (defn- table-details [table]
-  (merge default-table-details
-         (match-$ table
-           {:description     $
-            :entity_type     $
-            :visibility_type $
-            :schema          $
-            :name            $
-            :display_name    $
-            :rows            $
-            :updated_at      $
-            :entity_name     $
-            :active          $
-            :id              $
-            :db_id           $
-            :raw_table_id    $
-            :created_at      $})))
+  (-> default-table-details
+      (merge (match-$ table
+               {:description     $
+                :entity_type     $
+                :visibility_type $
+                :schema          $
+                :name            $
+                :display_name    $
+                :rows            $
+                :updated_at      $
+                :entity_name     $
+                :active          $
+                :id              $
+                :db_id           $
+                :raw_table_id    $
+                :created_at      $}))
+      (update :entity_type (comp (partial str "entity/") name))))
 
 
 ;; TODO - this is a test code smell, each test should clean up after itself and this step shouldn't be neccessary. One day we should be able to remove this!
@@ -272,7 +274,7 @@
 (defn- field-details [field]
   (merge
    default-field-details
-   (match-$ (hydrate/hydrate field :values)
+   (match-$ field
      {:updated_at          $
       :id                  $
       :raw_column_id       $
@@ -280,11 +282,9 @@
       :last_analyzed       $
       :fingerprint         $
       :fingerprint_version $
-      :fk_target_field_id  $
-      :values              $})))
+      :fk_target_field_id  $})))
 
-;; ## GET /api/meta/table/:id/query_metadata
-;; TODO - add in example with Field :values
+;; ## GET /api/database/:id/metadata
 (expect
   (merge default-db-details
          (match-$ (db)
@@ -301,21 +301,23 @@
                                    :name         "CATEGORIES"
                                    :display_name "Categories"
                                    :fields       [(assoc (field-details (Field (id :categories :id)))
-                                                    :table_id        (id :categories)
-                                                    :special_type    "type/PK"
-                                                    :name            "ID"
-                                                    :display_name    "ID"
-                                                    :database_type   "BIGINT"
-                                                    :base_type       "type/BigInteger"
-                                                    :visibility_type "normal")
+                                                    :table_id         (id :categories)
+                                                    :special_type     "type/PK"
+                                                    :name             "ID"
+                                                    :display_name     "ID"
+                                                    :database_type    "BIGINT"
+                                                    :base_type        "type/BigInteger"
+                                                    :visibility_type  "normal"
+                                                    :has_field_values "search")
                                                   (assoc (field-details (Field (id :categories :name)))
-                                                    :table_id           (id :categories)
-                                                    :special_type       "type/Name"
-                                                    :name               "NAME"
-                                                    :display_name       "Name"
-                                                    :database_type      "VARCHAR"
-                                                    :base_type          "type/Text"
-                                                    :visibility_type    "normal")]
+                                                    :table_id         (id :categories)
+                                                    :special_type     "type/Name"
+                                                    :name             "NAME"
+                                                    :display_name     "Name"
+                                                    :database_type    "VARCHAR"
+                                                    :base_type        "type/Text"
+                                                    :visibility_type  "normal"
+                                                    :has_field_values "list")]
                                    :segments     []
                                    :metrics      []
                                    :rows         75
