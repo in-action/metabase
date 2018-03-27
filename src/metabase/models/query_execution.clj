@@ -26,6 +26,7 @@
           :public-question
           :pulse
           :question
+          :pdf-download
           :xlsx-download))
 
 (defn- pre-insert [{context :context, :as query-execution}]
