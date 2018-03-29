@@ -188,7 +188,7 @@
   (tu/with-temporary-setting-values [enable-public-sharing true]
     (with-temp-public-card [{uuid :public_uuid}]
       (http/client :get 200 (str "public/card/" uuid "/query/pdf")))))
-      
+
 ;; Check that we can exec a PublicCard with `?parameters`
 (expect
   [{:name "Venue ID", :slug "venue_id", :type "id", :value 2}]
