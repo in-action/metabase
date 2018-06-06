@@ -1,17 +1,17 @@
 import { t } from "c-3po";
 
 const greetingPrefixes = [
-  t`Hey there`,
-  t`How's it going`,
-  t`Howdy`,
-  t`Greetings`,
-  t`Good to see you`,
+  t`Hola`,
+  t`¿Cómo te va?`,
+  t`Oye`,
+  t`Saludos`,
+  t`Me alegro de verte`,
 ];
 
 const subheadPrefixes = [
-  t`What do you want to know?`,
-  t`What's on your mind?`,
-  t`What do you want to find out?`,
+  t`¿Qué quieres saber?`,
+  t`¿Qué tienes en mente?`,
+  t`¿Qué quieres averiguar?`,
 ];
 
 var Greeting = {
@@ -26,7 +26,7 @@ var Greeting = {
   sayHello: function(personalization) {
     if (personalization) {
       var g = Greeting.simpleGreeting();
-      if (g === t`How's it going`) {
+      if (g === t`¿Cómo te va?`) {
         return g + ", " + personalization + "?";
       } else {
         return g + ", " + personalization;

@@ -43,19 +43,19 @@ const SECTION_ID_FAVORITES = "fav";
 const SECTIONS: ListFilterWidgetItem[] = [
   {
     id: SECTION_ID_ALL,
-    name: t`All dashboards`,
+    name: t`Todos los tableros de control`,
     icon: "dashboard",
     // empty: 'No questions have been saved yet.',
   },
   {
     id: SECTION_ID_FAVORITES,
-    name: t`Favorites`,
+    name: t`Favoritos`,
     icon: "star",
     // empty: 'You haven\'t favorited any questions yet.',
   },
   {
     id: SECTION_ID_MINE,
-    name: t`Saved by me`,
+    name: t`Guardado por mí`,
     icon: "mine",
     // empty:  'You haven\'t saved any questions yet.'
   },
@@ -160,14 +160,14 @@ export class Dashboards extends Component {
       >
         {modalOpen ? this.renderCreateDashboardModal() : null}
         <div className="flex align-center pt4 pb1">
-          <TitleAndDescription title={t`Dashboards`} />
+          <TitleAndDescription title={t`Tableros de control`} />
 
           <div className="flex-align-right cursor-pointer text-grey-5">
             <Link to="/dashboards/archive">
               <Icon
                 name="viewArchive"
                 className="mr2 text-brand-hover"
-                tooltip={t`View the archive`}
+                tooltip={t`Ver el archivo`}
                 size={20}
               />
             </Link>
@@ -176,7 +176,7 @@ export class Dashboards extends Component {
               <Icon
                 name="add"
                 className="text-brand-hover"
-                tooltip={t`Add new dashboard`}
+                tooltip={t`Agregar nuevo tablero`}
                 size={20}
                 onClick={this.showCreateDashboard}
               />
@@ -187,12 +187,12 @@ export class Dashboards extends Component {
           <div className="mt2 flex-full flex align-center justify-center">
             <EmptyState
               message={
-                <span>{jt`Put the charts and graphs you look at ${(
+                <span>{jt`Coloca los cuadros y gráficos que miras con ${(
                   <br />
-                )}frequently in a single, handy place.`}</span>
+                )}frecuencia en un lugar único y práctico.`}</span>
               }
               image="/app/img/dashboard_illustration"
-              action={t`Create a dashboard`}
+              action={t`Crear un tablero de control`}
               onActionClick={this.showCreateDashboard}
               className="mt2"
               imageClassName="mln2"
@@ -218,14 +218,13 @@ export class Dashboards extends Component {
                 <EmptyState
                   message={
                     <div className="mt4">
-                      <h3 className="text-grey-5">{t`No results found`}</h3>
-                      <p className="text-grey-4">{t`Try adjusting your filter to find what you’re
-                                                looking for.`}</p>
+                      <h3 className="text-grey-5">{t`No se encontraron resultados`}</h3>
+                      <p className="text-grey-4">{t`Intenta ajustandando los filtros para encontrar lo que estás buscando.`}</p>
                     </div>
                   }
                   image="/app/img/empty_dashboard"
                   imageHeight="210px"
-                  action={t`Create a dashboard`}
+                  action={t`Crear un tablero de control`}
                   imageClassName="mln2"
                   smallDescription
                 />

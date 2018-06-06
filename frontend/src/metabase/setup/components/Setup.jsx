@@ -42,13 +42,13 @@ export default class Setup extends Component {
     const { tag } = MetabaseSettings.get("version");
     return (
       <div className="SetupHelp bordered border-dashed p2 rounded mb4">
-        {t`If you feel stuck`},{" "}
+        {t`Si te sientes atascado`},{" "}
         <a
           className="link"
           href={"http://www.metabase.com/docs/" + tag + "/setting-up-metabase"}
           target="_blank"
-        >{t`our getting started guide`}</a>{" "}
-        {t`is just a click away.`}
+        >{t`nuestra guía de inicio`}</a>{" "}
+        {t`está a un solo click.`}
       </div>
     );
   }
@@ -90,12 +90,12 @@ export default class Setup extends Component {
               <h1
                 style={{ fontSize: "2.2rem" }}
                 className="text-brand"
-              >{t`Welcome to Metabase`}</h1>
-              <p className="text-body">{t`Looks like everything is working. Now let’s get to know you, connect to your data, and start finding you some answers!`}</p>
+              >{t`Bienvenido a Metabase`}</h1>
+              <p className="text-body">{t`Parece que todo está funcionando. Ahora vamos a conocerte, conectar con tus datos y empezar a encontrar algunas respuestas para ti!`}</p>
               <button
                 className="Button Button--primary mt4"
                 onClick={() => this.completeWelcome()}
-              >{t`Let's get started`}</button>
+              >{t`Empecemos`}</button>
             </div>
             <div className="absolute z1 bottom left right">
               <div className="inline-block">{this.renderFooter()}</div>
@@ -140,7 +140,7 @@ export default class Setup extends Component {
                   <h1
                     style={{ fontSize: "xx-large" }}
                     className="text-light pt2 pb2"
-                  >{t`You're all set up!`}</h1>
+                  >{t`¡Ya estás listo!`}</h1>
                   <div className="pt4">
                     <NewsletterForm
                       initialEmail={userDetails && userDetails.email}
@@ -151,7 +151,7 @@ export default class Setup extends Component {
                       to="/ready"
                       className="Button Button--primary"
                       onClick={this.completeSetup.bind(this)}
-                    >{t`Take me to Metabase`}</Link>
+                    >{t`Llévame a Metabase`}</Link>
                   </div>
                 </section>
               ) : null}

@@ -77,7 +77,7 @@ export default class Activity extends Component {
 
   userName(user, currentUser) {
     if (user && currentUser && user.id === currentUser.id) {
-      return t`You`;
+      return t`Tú`;
     } else if (user) {
       return user.first_name;
     } else {
@@ -89,7 +89,7 @@ export default class Activity extends Component {
     // this is a base to start with
     const description = {
       userName: this.userName(item.user, user),
-      summary: t`did some super awesome stuff thats hard to describe`,
+      summary: t`Hiciste unas cosas super impresionantes que son difíciles de describir`,
       timeSince: item.timestamp.fromNow(),
     };
 
@@ -98,7 +98,7 @@ export default class Activity extends Component {
         if (item.model_exists) {
           description.summary = (
             <span>
-              {t`created an alert about - `}
+              {t`Alerta creada sobre - `}
               <Link
                 to={Urls.modelToUrl(item.model, item.model_id)}
                 data-metabase-event={
@@ -113,7 +113,7 @@ export default class Activity extends Component {
         } else {
           description.summary = (
             <span>
-              {t`created an alert about - `}
+              {t`Alerta creada sobre - `}
               <span className="text-dark">{item.details.name}</span>
             </span>
           );
@@ -123,7 +123,7 @@ export default class Activity extends Component {
         if (item.model_exists) {
           description.summary = (
             <span>
-              {t`deleted an alert about - `}
+              {t`Alerta eliminada sobre - `}
               <Link
                 to={Urls.modelToUrl(item.model, item.model_id)}
                 data-metabase-event={
@@ -138,7 +138,7 @@ export default class Activity extends Component {
         } else {
           description.summary = (
             <span>
-              {t`deleted an alert about- `}
+              {t`Alerta eliminada sobre - `}
               <span className="text-dark">{item.details.name}</span>
             </span>
           );
@@ -149,7 +149,7 @@ export default class Activity extends Component {
         if (item.table) {
           description.summary = (
             <span>
-              {t`saved a question about `}
+              {t`Pregunta guardada sobre `}
               <Link
                 to={Urls.tableRowsQuery(item.database_id, item.table_id)}
                 data-metabase-event={
@@ -162,23 +162,23 @@ export default class Activity extends Component {
             </span>
           );
         } else {
-          description.summary = t`saved a question`;
+          description.summary = t`Pregunta guardada`;
         }
         break;
       case "card-delete":
-        description.summary = t`deleted a question`;
+        description.summary = t`Pregunta eliminada`;
         break;
       case "dashboard-create":
-        description.summary = t`created a dashboard`;
+        description.summary = t`Tablero de control creado`;
         break;
       case "dashboard-delete":
-        description.summary = t`deleted a dashboard`;
+        description.summary = t`Tablero de control eliminado`;
         break;
       case "dashboard-add-cards":
         if (item.model_exists) {
           description.summary = (
             <span>
-              {t`added a question to the dashboard - `}
+              {t`Se agregó una pregunta al tablero de control - `}
               <Link
                 to={Urls.dashboard(item.model_id)}
                 data-metabase-event={
@@ -193,7 +193,7 @@ export default class Activity extends Component {
         } else {
           description.summary = (
             <span>
-              {t`added a question to the dashboard - `}
+              {t`Se agregó una pregunta al tablero de control - `}
               <span className="text-dark">{item.details.name}</span>
             </span>
           );
@@ -203,7 +203,7 @@ export default class Activity extends Component {
         if (item.model_exists) {
           description.summary = (
             <span>
-              {t`removed a question from the dashboard - `}
+              {t`Se eliminó una pregunta del tablero de control - `}
               <Link
                 to={Urls.dashboard(item.model_id)}
                 data-metabase-event={
@@ -218,7 +218,7 @@ export default class Activity extends Component {
         } else {
           description.summary = (
             <span>
-              {t`removed a question from the dashboard - `}
+              {t`Se eliminó una pregunta del tablero de control - `}
               <span className="text-dark">{item.details.name}</span>
             </span>
           );
@@ -231,32 +231,32 @@ export default class Activity extends Component {
         const oldName =
           item.database && "name" in item.database
             ? item.database.name
-            : t`Unknown`;
+            : t`Desconocido`;
         if (item.details.name) {
           description.summary = (
             <span>
-              {t`received the latest data from`}{" "}
+              {t`Se recibieron los últimos datos de`}{" "}
               <span className="text-dark">{item.details.name}</span>
             </span>
           );
         } else {
           description.summary = (
             <span>
-              {t`received the latest data from`}{" "}
+              {t`Se recibieron los últimos datos de`}{" "}
               <span className="text-dark">{oldName}</span>
             </span>
           );
         }
         break;
       case "install":
-        description.userName = t`Hello World!`;
-        description.summary = t`Metabase is up and running.`;
+        description.userName = t`Hola Mundo!`;
+        description.summary = t`Metabase está arriba y corriendo.`;
         break;
       case "metric-create":
         if (item.model_exists) {
           description.summary = (
             <span>
-              {t`added the metric `}
+              {t`Se agregó la métrica `}
               <Link
                 to={Urls.tableRowsQuery(
                   item.database_id,
@@ -270,7 +270,7 @@ export default class Activity extends Component {
               >
                 {item.details.name}
               </Link>
-              {t` to the `}
+              {t` a la `}
               <Link
                 to={Urls.tableRowsQuery(item.database_id, item.table_id)}
                 data-metabase-event={
@@ -280,13 +280,13 @@ export default class Activity extends Component {
               >
                 {item.table.display_name}
               </Link>
-              {t` table`}
+              {t` tabla`}
             </span>
           );
         } else {
           description.summary = (
             <span>
-              {t`added the metric `}{" "}
+              {t`Se agregó la métrica `}{" "}
               <span className="text-dark">{item.details.name}</span>
             </span>
           );
@@ -296,7 +296,7 @@ export default class Activity extends Component {
         if (item.model_exists) {
           description.summary = (
             <span>
-              {t`made changes to the metric `}
+              {t`Se realizaron cambios en la métrica `}
               <Link
                 to={Urls.tableRowsQuery(
                   item.database_id,
@@ -310,7 +310,7 @@ export default class Activity extends Component {
               >
                 {item.details.name}
               </Link>
-              {t` in the `}
+              {t` de la `}
               <Link
                 to={Urls.tableRowsQuery(item.database_id, item.table_id)}
                 data-metabase-event={
@@ -320,32 +320,32 @@ export default class Activity extends Component {
               >
                 {item.table.display_name}
               </Link>
-              {t` table`}
+              {t` tabla`}
             </span>
           );
         } else {
           description.summary = (
             <span>
-              {t`made changes to the metric `}{" "}
+              {t`Se realizaron cambios en la métrica `}{" "}
               <span className="text-dark">{item.details.name}</span>
             </span>
           );
         }
         break;
       case "metric-delete":
-        description.summary = t`removed the metric ` + item.details.name;
+        description.summary = t`Se eliminó la métrica ` + item.details.name;
         break;
       case "pulse-create":
-        description.summary = t`created a pulse`;
+        description.summary = t`Se creó un pulso`;
         break;
       case "pulse-delete":
-        description.summary = t`deleted a pulse`;
+        description.summary = t`Se eliminó un pulso`;
         break;
       case "segment-create":
         if (item.model_exists) {
           description.summary = (
             <span>
-              {t`added the filter `}
+              {t`Se agregó el filtro`}{" "}
               <Link
                 to={Urls.tableRowsQuery(
                   item.database_id,
@@ -360,7 +360,7 @@ export default class Activity extends Component {
               >
                 {item.details.name}
               </Link>
-              {t` to the `}
+              {t` a la `}
               <Link
                 to={Urls.tableRowsQuery(item.database_id, item.table_id)}
                 data-metabase-event={
@@ -370,13 +370,13 @@ export default class Activity extends Component {
               >
                 {item.table.display_name}
               </Link>
-              {t` table`}
+              {t` tabla`}
             </span>
           );
         } else {
           description.summary = (
             <span>
-              {t`added the filter`}{" "}
+              {t`Se agregó el filtro`}{" "}
               <span className="text-dark">{item.details.name}</span>
             </span>
           );
@@ -386,7 +386,7 @@ export default class Activity extends Component {
         if (item.model_exists) {
           description.summary = (
             <span>
-              {t`made changes to the filter `}
+              {t`Se realizaron cambios en el filtro`}{" "}
               <Link
                 to={Urls.tableRowsQuery(
                   item.database_id,
@@ -401,7 +401,7 @@ export default class Activity extends Component {
               >
                 {item.details.name}
               </Link>
-              {t` in the `}
+              {t` de la `}
               <Link
                 to={Urls.tableRowsQuery(item.database_id, item.table_id)}
                 data-metabase-event={
@@ -411,23 +411,23 @@ export default class Activity extends Component {
               >
                 {item.table.display_name}
               </Link>
-              {t` table`}
+              {t` tabla`}
             </span>
           );
         } else {
           description.summary = (
             <span>
-              {t`made changes to the filter`}{" "}
+              {t`Se realizaron cambios en el filtro`}{" "}
               <span className="text-dark">{item.details.name}</span>
             </span>
           );
         }
         break;
       case "segment-delete":
-        description.summary = t`removed the filter ${item.details.name}`;
+        description.summary = t`Se eliminó el filtro ${item.details.name}`;
         break;
       case "user-joined":
-        description.summary = t`joined!`;
+        description.summary = t`Unido!`;
         break;
     }
 
@@ -527,10 +527,10 @@ export default class Activity extends Component {
                 <div className="flex flex-column layout-centered mt4">
                   <span className="QuestionCircle">!</span>
                   <div className="text-normal mt3 mb1">
-                    {t`Hmmm, looks like nothing has happened yet.`}
+                    {t`Hmmm, parece que no ha pasado nada todavía.`}
                   </div>
                   <div className="text-normal text-grey-2">
-                    {t`Save a question and get this baby going!`}
+                    {t`Guarda una pregunta y pon en marcha a este bebé!`}
                   </div>
                 </div>
               ) : (

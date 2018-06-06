@@ -30,7 +30,7 @@ export const login = createThunkAction(LOGIN, function(
     ) {
       return {
         data: {
-          errors: { email: t`Please enter a valid formatted email address.` },
+          errors: { email: t`Por favor ingrese un formato válido de correo electrónico.` },
         },
       };
     }
@@ -110,7 +110,7 @@ export const passwordReset = createThunkAction(PASSWORD_RESET, function(
     if (credentials.password !== credentials.password2) {
       return {
         success: false,
-        error: { data: { errors: { password2: t`Passwords do not match` } } },
+        error: { data: { errors: { password2: t`Las contraseñas no coinciden` } } },
       };
     }
 

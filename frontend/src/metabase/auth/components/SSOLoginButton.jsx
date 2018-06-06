@@ -15,7 +15,7 @@ class SSOLoginButton extends Component {
       <div className="relative z2 bg-white p2 cursor-pointer shadow-hover text-centered sm-text-left rounded block sm-inline-block bordered shadowed">
         <div className="flex align-center">
           <Icon className="mr1" name={provider} />
-          <h4>{t`Sign in with ${capitalize(provider)}`}</h4>
+          <h4>{t`Inicia sesión con ${capitalize(provider)}`}</h4>
         </div>
       </div>
     );

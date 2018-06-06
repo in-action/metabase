@@ -88,32 +88,32 @@ export default class Navbar extends Component {
         <div className="sm-pl4 flex align-center pr1">
           <div className="NavTitle flex align-center">
             <Icon name={"gear"} className="AdminGear" size={22} />
-            <span className="NavItem-text ml1 hide sm-show text-bold">{t`Metabase Admin`}</span>
+            <span className="NavItem-text ml1 hide sm-show text-bold">{t`Administración de Metabase`}</span>
           </div>
 
           <ul className="sm-ml4 flex flex-full">
             <AdminNavItem
-              name="Settings"
+              name={t`Configuraciones`}
               path="/admin/settings"
               currentPath={this.props.path}
             />
             <AdminNavItem
-              name="People"
+              name={t`Personas`}
               path="/admin/people"
               currentPath={this.props.path}
             />
             <AdminNavItem
-              name="Data Model"
+              name={t`Modelo de Datos`}
               path="/admin/datamodel"
               currentPath={this.props.path}
             />
             <AdminNavItem
-              name="Databases"
+              name={t`Bases de Datos`}
               path="/admin/databases"
               currentPath={this.props.path}
             />
             <AdminNavItem
-              name="Permissions"
+              name={t`Permisos`}
               path="/admin/permissions"
               currentPath={this.props.path}
             />
@@ -160,7 +160,7 @@ export default class Navbar extends Component {
           <li className="md-pl3 hide xs-show">
             <MainNavLink
               to="/dashboards"
-              name={t`Tableros`}
+              name={t`Tableros de control`}
               eventName="Dashboards"
               icon="dashboard"
             />
@@ -168,7 +168,7 @@ export default class Navbar extends Component {
           <li className="md-pl1 hide xs-show">
             <MainNavLink
               to="/questions"
-              name={t`Questions`}
+              name={t`Preguntas`}
               eventName="Questions"
               icon="all"
             />
@@ -176,7 +176,7 @@ export default class Navbar extends Component {
           <li className="md-pl1 hide xs-show">
             <MainNavLink
               to="/pulse"
-              name={t`Pulses`}
+              name={t`Pulsos`}
               eventName="Pulses"
               icon="pulse"
             />
@@ -184,7 +184,7 @@ export default class Navbar extends Component {
           <li className="md-pl1 hide xs-show">
             <MainNavLink
               to="/reference/guide"
-              name={t`Data Reference`}
+              name={t`Referencia de Datos`}
               eventName="DataReference"
               icon="reference"
             />
@@ -196,7 +196,7 @@ export default class Navbar extends Component {
               style={BUTTON_PADDING_STYLES.newQuestion}
               className="NavNewQuestion rounded inline-block bg-white text-brand text-bold cursor-pointer px2 no-decoration transition-all"
             >
-              {t`New Question`}
+              {t`Nueva Pregunta`}
             </Link>
           </li>
           <li className="flex-align-right transition-background hide sm-show">

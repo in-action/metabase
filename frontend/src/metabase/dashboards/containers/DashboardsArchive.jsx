@@ -75,7 +75,7 @@ export class Dashboards extends Component {
 
     const headerWithBackContainer = (
       <div className="flex align-center pt4 pb1">
-        <HeaderWithBack name={t`Archive`} />
+        <HeaderWithBack name={t`Archivo`} />
       </div>
     );
 
@@ -93,9 +93,9 @@ export class Dashboards extends Component {
             >
               <EmptyState
                 message={
-                  <span>{jt`No dashboards have been ${(
+                  <span>{jt`Ningún tablero de control ha sido ${(
                     <br />
-                  )} archived yet`}</span>
+                  )} archivado aún`}</span>
                 }
                 icon="viewArchive"
               />
@@ -115,8 +115,8 @@ export class Dashboards extends Component {
                 <EmptyState
                   message={
                     <div className="mt4">
-                      <h3 className="text-grey-5">{t`No results found`}</h3>
-                      <p className="text-grey-4">{t`Try adjusting your filter to find what you’re looking for.`}</p>
+                      <h3 className="text-grey-5">{t`No se encontraron resultados`}</h3>
+                      <p className="text-grey-4">{t`Intenta ajustar tu filtro para encontrar lo que estás buscando.`}</p>
                     </div>
                   }
                   image="/app/img/empty_dashboard"

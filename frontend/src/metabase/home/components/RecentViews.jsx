@@ -36,7 +36,7 @@ export default class RecentViews extends Component {
   render() {
     const { recentViews } = this.props;
     return (
-      <SidebarSection title={t`Recently Viewed`} icon="clock">
+      <SidebarSection title={t`Visto Recientemente`} icon="clock">
         {recentViews.length > 0 ? (
           <ul className="p2">
             {recentViews.map((item, index) => {
@@ -70,7 +70,7 @@ export default class RecentViews extends Component {
               className="p3 text-centered text-grey-2"
               style={{ maxWidth: "100%" }}
             >
-              {t`You haven't looked at any dashboards or questions recently`}
+              {t`No has visto ningún tablero de control o pregunta recientemente`}
             </p>
           </div>
         )}

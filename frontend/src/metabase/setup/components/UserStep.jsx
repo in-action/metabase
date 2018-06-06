@@ -97,14 +97,14 @@ export default class UserStep extends Component {
 
     // validate email address
     if (!MetabaseUtils.validEmail(fieldValues.email)) {
-      formErrors.data.errors.email = t`Not a valid formatted email address`;
+      formErrors.data.errors.email = t`Formato del correo electrónico no válido`;
     }
 
     // TODO - validate password complexity
 
     // validate password match
     if (fieldValues.password !== fieldValues.password_confirm) {
-      formErrors.data.errors.password_confirm = t`Passwords do not match`;
+      formErrors.data.errors.password_confirm = t`Las contraseñas no coinciden`;
     }
 
     if (_.keys(formErrors.data.errors).length > 0) {
@@ -149,8 +149,8 @@ export default class UserStep extends Component {
     const passwordComplexityDesc = MetabaseSettings.passwordComplexity();
     const stepText =
       activeStep <= stepNumber
-        ? t`What should we call you?`
-        : t`Hi, ${userDetails.first_name}. nice to meet you!`;
+        ? t`¿Cómo deberíamos llamarte?`
+        : t`Hola, ${userDetails.first_name}. gusto en conocerte!`;
 
     if (activeStep !== stepNumber) {
       return (
@@ -179,7 +179,7 @@ export default class UserStep extends Component {
             >
               <div>
                 <FormLabel
-                  title={t`First name`}
+                  title={t`Nombre(s)`}
                   fieldName="first_name"
                   formError={formError}
                 />
@@ -196,7 +196,7 @@ export default class UserStep extends Component {
               </div>
               <div>
                 <FormLabel
-                  title={t`Last name`}
+                  title={t`Apellido(s)`}
                   fieldName="last_name"
                   formError={formError}
                 />
@@ -214,7 +214,7 @@ export default class UserStep extends Component {
 
             <FormField fieldName="email" formError={formError}>
               <FormLabel
-                title={t`Email address`}
+                title={t`Correo electrónico`}
                 fieldName="email"
                 formError={formError}
               />
@@ -235,7 +235,7 @@ export default class UserStep extends Component {
               error={passwordError !== null}
             >
               <FormLabel
-                title={t`Create a password`}
+                title={t`Crea una contraseña`}
                 fieldName="password"
                 formError={formError}
                 message={passwordError}
@@ -261,7 +261,7 @@ export default class UserStep extends Component {
 
             <FormField fieldName="password_confirm" formError={formError}>
               <FormLabel
-                title={t`Confirm password`}
+                title={t`Confirma la contraseña`}
                 fieldName="password_confirm"
                 formError={formError}
               />
@@ -270,7 +270,7 @@ export default class UserStep extends Component {
                 name="password_confirm"
                 type="password"
                 defaultValue={userDetails ? userDetails.password : ""}
-                placeholder={t`Shhh... but one more time so we get it right`}
+                placeholder={t`Shhh... pero una vez más para hacerlo bien`}
                 required
                 onChange={this.onPasswordConfirmChange}
               />
@@ -279,7 +279,7 @@ export default class UserStep extends Component {
 
             <FormField fieldName="site_name" formError={formError}>
               <FormLabel
-                title={t`Your company or team name`}
+                title={t`Nombre de tu compañía o equipo de trabajo`}
                 fieldName="site_name"
                 formError={formError}
               />
@@ -288,7 +288,7 @@ export default class UserStep extends Component {
                 name="site_name"
                 type="text"
                 defaultValue={userDetails ? userDetails.site_name : ""}
-                placeholder={t`Department of awesome`}
+                placeholder={t`Departamento`}
                 required
                 onChange={this.onSiteNameChange}
               />
@@ -300,7 +300,7 @@ export default class UserStep extends Component {
                 className={cx("Button", { "Button--primary": valid })}
                 disabled={!valid}
               >
-                {t`Next`}
+                {t`Siguiente`}
               </button>
               <FormMessage />
             </div>

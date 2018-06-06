@@ -56,7 +56,7 @@ export default class CreateDashboardModal extends Component {
   render() {
     var formError;
     if (this.state.errors) {
-      var errorMessage = t`Server error encountered`;
+      var errorMessage = t`Error del servidor encontrado`;
       if (this.state.errors.data && this.state.errors.data.message) {
         errorMessage = this.state.errors.data.message;
       }
@@ -72,29 +72,29 @@ export default class CreateDashboardModal extends Component {
     return (
       <ModalContent
         id="CreateDashboardModal"
-        title={t`Create dashboard`}
+        title={t`Crear tablero de control`}
         footer={[
           formError,
-          <Button onClick={this.props.onClose}>{t`Cancel`}</Button>,
+          <Button onClick={this.props.onClose}>{t`Cancelar`}</Button>,
           <Button
             primary={formReady}
             disabled={!formReady}
             onClick={this.createNewDash}
-          >{t`Create`}</Button>,
+          >{t`Crear`}</Button>,
         ]}
         onClose={this.props.onClose}
       >
         <form className="Modal-form" onSubmit={this.createNewDash}>
           <div className="Form-inputs">
             <FormField
-              displayName={t`Name`}
+              displayName={t`Nombre`}
               fieldName="name"
               errors={this.state.errors}
             >
               <input
                 className="Form-input full"
                 name="name"
-                placeholder={t`What is the name of your dashboard?`}
+                placeholder={t`¿Cuál es el nombre de tu tablero?`}
                 value={this.state.name}
                 onChange={this.setName}
                 autoFocus
@@ -102,14 +102,14 @@ export default class CreateDashboardModal extends Component {
             </FormField>
 
             <FormField
-              displayName={t`Description`}
+              displayName={t`Descripción`}
               fieldName="description"
               errors={this.state.errors}
             >
               <input
                 className="Form-input full"
                 name="description"
-                placeholder={t`It's optional but oh, so helpful`}
+                placeholder={t`Esto es opcional pero es tan útil`}
                 value={this.state.description}
                 onChange={this.setDescription}
               />
