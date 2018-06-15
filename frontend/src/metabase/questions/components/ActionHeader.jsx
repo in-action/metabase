@@ -22,7 +22,7 @@ const ActionHeader = ({
 }) => (
   <div className={S.actionHeader}>
     <Tooltip
-      tooltip={t`Select all ${visibleCount}`}
+      tooltip={t`Selecciona todos ${visibleCount}`}
       isEnabled={!allAreSelected}
     >
       <span className="ml1">
@@ -34,14 +34,14 @@ const ActionHeader = ({
         />
       </span>
     </Tooltip>
-    <span className={S.selectedCount}>{t`${selectedCount} selected`}</span>
+    <span className={S.selectedCount}>{t`${selectedCount} seleccionados`}</span>
     <span className="flex align-center flex-align-right">
       {!sectionIsArchive && labels.length > 0 ? (
         <LabelPopover
           triggerElement={
             <span className={S.actionButton}>
               <Icon name="label" />
-              {t`Labels`}
+              {t`Etiquetas`}
               <Icon name="chevrondown" size={12} />
             </span>
           }
@@ -54,7 +54,7 @@ const ActionHeader = ({
         triggerElement={
           <span className={S.actionButton}>
             <Icon name="move" className="mr1" />
-            {t`Move`}
+            {t`Mover`}
           </span>
         }
       >
@@ -68,7 +68,7 @@ const ActionHeader = ({
           name={sectionIsArchive ? "unarchive" : "archive"}
           className="mr1"
         />
-        {sectionIsArchive ? t`Unarchive` : t`Archive`}
+        {sectionIsArchive ? t`Desarchivar` : t`Archivar`}
       </span>
     </span>
   </div>

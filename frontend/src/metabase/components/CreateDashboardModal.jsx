@@ -109,7 +109,7 @@ export default class CreateDashboardModal extends Component {
               <input
                 className="Form-input full"
                 name="description"
-                placeholder={t`Esto es opcional pero es tan útil`}
+                placeholder={t`Esto es opcional, pero es muy útil`}
                 value={this.state.description}
                 onChange={this.setDescription}
               />

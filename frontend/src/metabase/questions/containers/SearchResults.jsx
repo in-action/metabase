@@ -41,7 +41,7 @@ class SearchResults extends Component {
               name={
                 totalCount != null
                   ? `${totalCount} ${inflect("result", totalCount)}`
-                  : t`Search results`
+                  : t`Resultados de búsqueda`
               }
             />
           </div>
@@ -49,7 +49,7 @@ class SearchResults extends Component {
             entityType="cards"
             entityQuery={this.props.location.query}
             showSearchWidget={false}
-            defaultEmptyState={t`No matching questions found`}
+            defaultEmptyState={t`No se encontraron preguntas coincidentes`}
           />
         </div>
       </div>

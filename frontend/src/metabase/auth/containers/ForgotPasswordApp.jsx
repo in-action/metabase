@@ -53,7 +53,7 @@ export default class ForgotPasswordApp extends Component {
           {!emailConfigured ? (
             <div className="Grid-cell">
               <div className="text-centered bordered rounded shadowed p4">
-                <h3 className="my4">{t`Please contact an administrator to have them reset your password`}</h3>
+                <h3 className="my4">{t`Ponte en contacto con un administrador para que restablezca tu contraseña`}</h3>
                 <BackToLogin />
               </div>
             </div>
@@ -66,7 +66,7 @@ export default class ForgotPasswordApp extends Component {
                     name="form"
                     noValidate
                   >
-                    <h3 className="Login-header Form-offset mb3">{t`Forgot password`}</h3>
+                    <h3 className="Login-header Form-offset mb3">{t`Olvidé la contraseña`}</h3>
 
                     <FormMessage
                       message={error && error.data && error.data.message}
@@ -74,14 +74,14 @@ export default class ForgotPasswordApp extends Component {
 
                     <FormField key="email" fieldName="email" formError={error}>
                       <FormLabel
-                        title={t`Email address`}
+                        title={t`Dirección de correo electrónico`}
                         fieldName={"email"}
                         formError={error}
                       />
                       <input
                         className="Form-input Form-offset full"
                         name="email"
-                        placeholder={t`The email you use for your Metabase account`}
+                        placeholder={t`El correo electrónico que utilizas para tu cuenta de Metabase`}
                         type="text"
                         onChange={e => this.setState({ email: e.target.value })}
                         defaultValue={this.state.email}
@@ -96,7 +96,7 @@ export default class ForgotPasswordApp extends Component {
                         onClick={e => this.sendResetNotification(e)}
                         disabled={!valid}
                       >
-                        {t`Send password reset email`}
+                        {t`Enviar correo electrónico de restablecimiento de contraseña`}
                       </button>
                     </div>
                   </form>
@@ -107,7 +107,7 @@ export default class ForgotPasswordApp extends Component {
                     <div className="SuccessMark">
                       <Icon name="check" />
                     </div>
-                    <p className="SuccessText">{t`Check your email for instructions on how to reset your password.`}</p>
+                    <p className="SuccessText">{t`Consulta tu correo electrónico para obtener instrucciones sobre cómo restablecer la contraseña.`}</p>
                   </div>
                 </div>
               )}

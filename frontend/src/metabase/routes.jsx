@@ -33,7 +33,6 @@ import CollectionPage from "metabase/questions/containers/CollectionPage.jsx";
 import CollectionEdit from "metabase/questions/containers/CollectionEdit.jsx";
 import CollectionCreate from "metabase/questions/containers/CollectionCreate.jsx";
 import SearchResults from "metabase/questions/containers/SearchResults.jsx";
-import EditLabels from "metabase/questions/containers/EditLabels.jsx";
 import CollectionPermissions from "metabase/admin/permissions/containers/CollectionsPermissionsApp.jsx";
 import EntityList from "metabase/questions/containers/EntityList.jsx";
 
@@ -192,7 +191,7 @@ export const getRoutes = store => (
       <Route path="/auth">
         <IndexRedirect to="/auth/login" />
         <Route component={IsNotAuthenticated}>
-          <Route path="login" title={t`Login`} component={LoginApp} />
+          <Route path="login" title={t`Iniciar sesión`} component={LoginApp} />
         </Route>
         <Route path="logout" component={LogoutApp} />
         <Route path="forgot_password" component={ForgotPasswordApp} />
@@ -209,19 +208,19 @@ export const getRoutes = store => (
         {/* DASHBOARD LIST */}
         <Route
           path="/dashboards"
-          title={t`Dashboards`}
+          title={t`Tableros de control`}
           component={Dashboards}
         />
         <Route
           path="/dashboards/archive"
-          title={t`Dashboards`}
+          title={t`Tableros de control`}
           component={DashboardsArchive}
         />
 
         {/* INDIVIDUAL DASHBOARDS */}
         <Route
           path="/dashboard/:dashboardId"
-          title={t`Dashboard`}
+          title={t`Tablero de control`}
           component={DashboardApp}
         >
           <ModalRoute path="history" modal={DashboardHistoryModal} />
@@ -233,11 +232,11 @@ export const getRoutes = store => (
         <Route path="/question">
           <IndexRoute component={QueryBuilder} />
           {/* NEW QUESTION FLOW */}
-          <Route path="new" title={t`New Question`}>
+          <Route path="new" title={t`Nueva pregunta`}>
             <IndexRoute component={NewQuestionStart} />
             <Route
               path="metric"
-              title={t`Metrics`}
+              title={t`Métricas`}
               component={NewQuestionMetricSearch}
             />
           </Route>
@@ -245,14 +244,14 @@ export const getRoutes = store => (
         <Route path="/question/:cardId" component={QueryBuilder} />
 
         {/* QUESTIONS */}
-        <Route path="/questions" title={t`Questions`}>
+        <Route path="/questions" title={t`Preguntas`}>
           <IndexRoute component={QuestionIndex} />
           <Route
             path="search"
-            title={({ location: { query: { q } } }) => t`Search` + ": " + q}
+            title={({ location: { query: { q } } }) => t`Buscar` + ": " + q}
             component={SearchResults}
           />
-          <Route path="archive" title={t`Archive`} component={Archive} />
+          <Route path="archive" title={t`Archivo`} component={Archive} />
           <Route
             path="collections/:collectionSlug"
             component={CollectionPage}
@@ -277,16 +276,12 @@ export const getRoutes = store => (
           <Route path=":collectionId" component={CollectionEdit} />
         </Route>
 
-        <Route path="/labels">
-          <IndexRoute component={EditLabels} />
-        </Route>
-
         {/* REFERENCE */}
-        <Route path="/reference" title={`Data Reference`}>
+        <Route path="/reference" title={`Referencia de Datos`}>
           <IndexRedirect to="/reference/guide" />
           <Route
             path="guide"
-            title={`Getting Started`}
+            title={`Empezar`}
             component={GettingStartedGuideContainer}
           />
           <Route path="metrics" component={MetricListContainer} />
@@ -348,7 +343,7 @@ export const getRoutes = store => (
         </Route>
 
         {/* XRAY */}
-        <Route path="/xray" title={t`XRay`}>
+        <Route path="/xray" title={t`Radiografía`}>
           <Route path="segment/:segmentId/:cost" component={SegmentXRay} />
           <Route path="table/:tableId/:cost" component={TableXRay} />
           <Route path="field/:fieldId/:cost" component={FieldXRay} />
@@ -364,7 +359,7 @@ export const getRoutes = store => (
         </Route>
 
         {/* PULSE */}
-        <Route path="/pulse" title={t`Pulses`}>
+        <Route path="/pulse" title={t`Pulsos`}>
           <IndexRoute component={PulseListApp} />
           <Route path="create" component={PulseEditApp} />
           <Route path=":pulseId" component={PulseEditApp} />
@@ -375,16 +370,16 @@ export const getRoutes = store => (
       </Route>
 
       {/* ADMIN */}
-      <Route path="/admin" title={t`Admin`} component={IsAdmin}>
+      <Route path="/admin" title={t`Administración`} component={IsAdmin}>
         <IndexRedirect to="/admin/settings" />
 
-        <Route path="databases" title={t`Databases`}>
+        <Route path="databases" title={t`Bases de Datos`}>
           <IndexRoute component={DatabaseListApp} />
           <Route path="create" component={DatabaseEditApp} />
           <Route path=":databaseId" component={DatabaseEditApp} />
         </Route>
 
-        <Route path="datamodel" title={t`Data Model`}>
+        <Route path="datamodel" title={t`Modelo de datos`}>
           <IndexRedirect to="database" />
           <Route path="database" component={MetadataEditorApp} />
           <Route path="database/:databaseId" component={MetadataEditorApp} />
@@ -412,16 +407,16 @@ export const getRoutes = store => (
         </Route>
 
         {/* PEOPLE */}
-        <Route path="people" title={t`People`} component={AdminPeopleApp}>
+        <Route path="people" title={t`Personas`} component={AdminPeopleApp}>
           <IndexRoute component={PeopleListingApp} />
-          <Route path="groups" title={t`Groups`}>
+          <Route path="groups" title={t`Grupos`}>
             <IndexRoute component={GroupsListingApp} />
             <Route path=":groupId" component={GroupDetailApp} />
           </Route>
         </Route>
 
         {/* SETTINGS */}
-        <Route path="settings" title={t`Settings`}>
+        <Route path="settings" title={t`Configuraciones`}>
           <IndexRedirect to="/admin/settings/setup" />
           {/* <IndexRoute component={SettingsEditorApp} /> */}
           <Route path=":section/:authType" component={SettingsEditorApp} />

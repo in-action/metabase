@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router";
 
 import cx from "classnames";
-import { t } from "c-3po";
+import { t, jt } from "c-3po";
 import AuthScene from "../components/AuthScene.jsx";
 import FormField from "metabase/components/form/FormField.jsx";
 import FormLabel from "metabase/components/form/FormLabel.jsx";
@@ -95,9 +95,15 @@ export default class PasswordResetApp extends Component {
     const { resetError, resetSuccess, newUserJoining } = this.props;
     const passwordComplexity = MetabaseSettings.passwordComplexity(false);
 
+    const requestLink = (
+      <Link to="/auth/forgot_password" className="link">
+        {t`solicitar un nuevo correo electrónico de restablecimiento`}
+      </Link>
+    );
+
     if (!this.state.tokenValid) {
       return (
-        <div>
+        <div className="full-height">
           <div className="full-height bg-white flex flex-column flex-full md-layout-centered">
             <div className="wrapper">
               <div className="Login-wrapper Grid  Grid--full md-Grid--1of2">
@@ -109,10 +115,10 @@ export default class PasswordResetApp extends Component {
                   />
                 </div>
                 <div className="Grid-cell bordered rounded shadowed">
-                  <h3 className="Login-header Form-offset mt4">{t`Whoops, that's an expired link`}</h3>
+                  <h3 className="Login-header Form-offset mt4">{t`Ups, el enlace ha caducado`}</h3>
                   <p className="Form-offset mb4 mr4">
-                    {t`For security reasons, password reset links expire after a little while. If you still need
-                                        to reset your password, you can <Link to="/auth/forgot_password" className="link">request a new reset email</Link>.`}
+                    {jt`Por razones de seguridad, los enlaces de restablecimiento de contraseña caducan después de un tiempo. Si aun necesitas
+                                        restablecer tu contraseña, puedes ${requestLink}.`}
                   </p>
                 </div>
               </div>
@@ -136,9 +142,9 @@ export default class PasswordResetApp extends Component {
                   onSubmit={e => this.formSubmitted(e)}
                   noValidate
                 >
-                  <h3 className="Login-header Form-offset">{t`New password`}</h3>
+                  <h3 className="Login-header Form-offset">{t`Nueva contraseña`}</h3>
 
-                  <p className="Form-offset text-grey-3 mb4">{t`To keep your data secure, passwords ${passwordComplexity}`}</p>
+                  <p className="Form-offset text-grey-3 mb4">{t`Para mantener tus datos seguros, contraseñas ${passwordComplexity}`}</p>
 
                   <FormMessage
                     formError={
@@ -152,14 +158,14 @@ export default class PasswordResetApp extends Component {
                     formError={resetError}
                   >
                     <FormLabel
-                      title={t`Create a new password`}
+                      title={t`Crear una nueva contraseña`}
                       fieldName={"password"}
                       formError={resetError}
                     />
                     <input
                       className="Form-input Form-offset full"
                       name="password"
-                      placeholder={t`Make sure its secure like the instructions above`}
+                      placeholder={t`Asegúrate de que sea segura según las instrucciones anteriores`}
                       type="password"
                       onChange={e => this.onChange("password", e.target.value)}
                       autoFocus
@@ -173,14 +179,14 @@ export default class PasswordResetApp extends Component {
                     formError={resetError}
                   >
                     <FormLabel
-                      title={t`Confirm new password`}
+                      title={t`Confirmar la nueva contraseña`}
                       fieldName={"password2"}
                       formError={resetError}
                     />
                     <input
                       className="Form-input Form-offset full"
                       name="password2"
-                      placeholder={t`Make sure it matches the one you just entered`}
+                      placeholder={t`Asegúrate de que coincida con la que acabas de introducir`}
                       type="password"
                       onChange={e => this.onChange("password2", e.target.value)}
                     />
@@ -205,18 +211,18 @@ export default class PasswordResetApp extends Component {
                   <div className="SuccessMark">
                     <Icon name="check" />
                   </div>
-                  <p>{t`Your password has been reset.`}</p>
+                  <p>{t`Tu contraseña ha sido restablecida.`}</p>
                   <p>
                     {newUserJoining ? (
                       <Link
                         to="/?new"
                         className="Button Button--primary"
-                      >{t`Sign in with your new password`}</Link>
+                      >{t`Inicia sesión con tu nueva contraseña`}</Link>
                     ) : (
                       <Link
                         to="/"
                         className="Button Button--primary"
-                      >{t`Sign in with your new password`}</Link>
+                      >{t`Inicia sesión con tu nueva contraseña`}</Link>
                     )}
                   </p>
                 </div>

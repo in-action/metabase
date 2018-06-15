@@ -123,7 +123,7 @@ export default class LoginApp extends Component {
               name="form"
               onSubmit={e => this.formSubmitted(e)}
             >
-              <h3 className="Login-header Form-offset">{t`Sign in to Metabase`}</h3>
+              <h3 className="Login-header Form-offset">{t`Iniciar sesión en Metabase`}</h3>
 
               {Settings.ssoEnabled() && (
                 <div className="mx4 mb4 py3 border-bottom relative">
@@ -133,7 +133,7 @@ export default class LoginApp extends Component {
                     className="mx1 absolute text-centered left right"
                     style={{ bottom: -8 }}
                   >
-                    <span className="text-bold px3 py2 text-grey-3 bg-white">{t`OR`}</span>
+                    <span className="text-bold px3 py2 text-grey-3 bg-white">{t`O`}</span>
                   </div>
                 </div>
               )}
@@ -152,8 +152,8 @@ export default class LoginApp extends Component {
                 <FormLabel
                   title={
                     Settings.ldapEnabled()
-                      ? t`Username or email address`
-                      : t`Email address`
+                      ? t`Nombre de usuario o dirección de correo electrónico`
+                      : t`dirección de correo electrónico`
                   }
                   fieldName={"username"}
                   formError={loginError}
@@ -183,7 +183,7 @@ export default class LoginApp extends Component {
                 formError={loginError}
               >
                 <FormLabel
-                  title={t`Password`}
+                  title={t`Contraseña`}
                   fieldName={"password"}
                   formError={loginError}
                 />
@@ -200,7 +200,7 @@ export default class LoginApp extends Component {
               <div className="Form-field">
                 <ul className="Form-offset">
                   <input name="remember" type="checkbox" defaultChecked />{" "}
-                  <label className="inline-block">{t`Remember Me:`}</label>
+                  <label className="inline-block">{t`Recordarme:`}</label>
                 </ul>
               </div>
 
@@ -211,7 +211,7 @@ export default class LoginApp extends Component {
                   })}
                   disabled={!this.state.valid}
                 >
-                  Sign in
+                  {t`Iniciar sesión`}
                 </button>
                 <Link
                   to={
@@ -224,7 +224,7 @@ export default class LoginApp extends Component {
                   onClick={e => {
                     window.OSX ? window.OSX.resetPassword() : null;
                   }}
-                >{t`I seem to have forgotten my password`}</Link>
+                >{t`Parece que he olvidado mi contraseña`}</Link>
               </div>
             </form>
           </div>

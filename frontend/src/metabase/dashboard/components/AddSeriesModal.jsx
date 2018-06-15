@@ -6,7 +6,7 @@ import LoadingAndErrorWrapper from "metabase/components/LoadingAndErrorWrapper.j
 import Icon from "metabase/components/Icon.jsx";
 import Tooltip from "metabase/components/Tooltip.jsx";
 import CheckBox from "metabase/components/CheckBox.jsx";
-
+import { t } from "c-3po";
 import MetabaseAnalytics from "metabase/lib/analytics";
 import Query from "metabase/lib/query";
 
@@ -266,11 +266,11 @@ export default class AddSeriesModal extends Component {
               >
                 {this.state.state === "loading" ? (
                   <div className="h3 rounded bordered p3 bg-white shadowed">
-                    Applying Question
+                    {t`Aplicando Pregunta`}
                   </div>
                 ) : this.state.state === "incompatible" ? (
                   <div className="h3 rounded bordered p3 bg-error border-error text-white">
-                    That question isn't compatible
+                    {t`Esta pregunta no es compatible`}
                   </div>
                 ) : null}
               </div>
@@ -278,14 +278,14 @@ export default class AddSeriesModal extends Component {
           </div>
           <div className="flex-no-shrink pl4 pb4 pt1">
             <button className="Button Button--primary" onClick={this.onDone}>
-              Done
+              {t`Terminado`}
             </button>
             <button
               data-metabase-event={"Dashboard;Edit Series Modal;cancel"}
               className="Button ml2"
               onClick={this.props.onClose}
             >
-              Cancel
+              {t`Cancelar`}
             </button>
           </div>
         </div>
@@ -306,7 +306,7 @@ export default class AddSeriesModal extends Component {
               className="h4 input full pl1"
               style={{ border: "none", backgroundColor: "transparent" }}
               type="search"
-              placeholder="Search for a question"
+              placeholder={t`Buscar una pregunta`}
               onFocus={this.onSearchFocus}
               onChange={this.onSearchChange}
             />
@@ -334,7 +334,9 @@ export default class AddSeriesModal extends Component {
                     </span>
                     <span className="px1">{card.name}</span>
                     {card.dataset_query.type !== "query" && (
-                      <Tooltip tooltip="We're not sure if this question is compatible">
+                      <Tooltip
+                        tooltip={t`No estamos seguros si esta pregunta es compatible`}
+                      >
                         <Icon
                           className="px1 flex-align-right text-grey-2 text-grey-4-hover cursor-pointer flex-no-shrink"
                           name="warning"

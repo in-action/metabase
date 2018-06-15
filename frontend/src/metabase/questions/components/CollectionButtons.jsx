@@ -55,7 +55,7 @@ class CollectionButton extends Component {
               >
                 <Icon
                   name="lockoutline"
-                  tooltip={t`Set collection permissions`}
+                  tooltip={t`Establecer permisos de colección`}
                 />
               </Link>
               <ArchiveCollectionWidget collectionId={id} />
@@ -101,7 +101,7 @@ const NewCollectionButton = ({ push }) => (
         <Icon name="add" width="32" height="32" />
       </div>
     </div>
-    <h3>{t`New collection`}</h3>
+    <h3>{t`Nueva colección`}</h3>
   </div>
 );
 

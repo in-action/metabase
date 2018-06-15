@@ -34,19 +34,19 @@ export const CollectionEmptyState = () => (
       className="mb2 sm-mr2 sm-mb0 hide sm-show"
     />
     <div className="flex-full text-centered sm-text-left">
-      <h3>{t`Create collections for your saved questions`}</h3>
+      <h3>{t`Crea colecciones para tus preguntas guardadas`}</h3>
       <div className="mt1">
-        {t`Collections help you organize your questions and allow you to decide who gets to see what.`}{" "}
+        {t`Las colecciones te ayudan a organizar tus preguntas y te permiten decidir quién puede ver qué.`}{" "}
         <a
           href="http://www.metabase.com/docs/latest/administration-guide/06-collections.html"
           target="_blank"
         >
-          {t`Learn more`}
+          {t`Aprende más`}
         </a>
       </div>
     </div>
     <Link to="/collections/create" className="mt2 sm-mt0">
-      <Button primary>{t`Create a collection`}</Button>
+      <Button primary>{t`Crear una colección`}</Button>
     </Link>
   </div>
 );
@@ -56,10 +56,10 @@ export const NoSavedQuestionsState = () => (
     <EmptyState
       message={
         <span
-        >{t`Explore your data, create charts or maps, and save what you find.`}</span>
+        >{t`Explora tus datos, crea cuadros o mapas y guarda lo que descubras.`}</span>
       }
       image="/app/img/questions_illustration"
-      action={t`Ask a question`}
+      action={t`Haz una pregunta`}
       link="/question"
     />
   </div>
@@ -90,12 +90,12 @@ export const QuestionIndexHeader = ({
               <Icon
                 size={18}
                 name="lock"
-                tooltip={t`Set permissions for collections`}
+                tooltip={t`Establecer permisos para las colecciones`}
               />
             </Link>
           )}
           <Link to="/questions/archive">
-            <Icon size={20} name="viewArchive" tooltip={t`View the archive`} />
+            <Icon size={20} name="viewArchive" tooltip={t`Ver el archivo`} />
           </Link>
         </CollectionActions>
       </div>

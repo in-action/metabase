@@ -1,3 +1,4 @@
+/* @flow */
 /* eslint "react/prop-types": "warn" */
 import React from "react";
 import PropTypes from "prop-types";
@@ -12,19 +13,46 @@ import CheckBox from "metabase/components/CheckBox.jsx";
 import Tooltip from "metabase/components/Tooltip.jsx";
 import ModalWithTrigger from "metabase/components/ModalWithTrigger.jsx";
 import MoveToCollection from "../containers/MoveToCollection.jsx";
-import Labels from "./Labels.jsx";
 import CollectionBadge from "./CollectionBadge.jsx";
 
 import * as Urls from "metabase/lib/urls";
 
 const ITEM_ICON_SIZE = 20;
 
+import type { Item as ItemType, Entity } from "../types";
+import type { Collection } from "metabase/meta/types/Collection";
+import type { Label } from "metabase/meta/types/Label";
+
+type ItemProps = ItemType & {
+  showCollectionName: boolean,
+  setItemSelected: (selected: { [key: number]: boolean }) => void,
+  setFavorited: (id: number, favorited: boolean) => void,
+  setArchived: (id: number, archived: boolean, undoable: boolean) => void,
+  onEntityClick: (entity: Entity) => void,
+};
+
+type ItemBodyProps = {
+  entity: Entity,
+  id: number,
+  name: string,
+  description: string,
+  labels: Label[],
+  favorite: boolean,
+  collection: ?Collection,
+  setFavorited: (id: number, favorited: boolean) => void,
+  onEntityClick: (entity: Entity) => void,
+};
+
+type ItemCreatedProps = {
+  created: string,
+  by: string,
+};
+
 const Item = ({
   entity,
   id,
   name,
   description,
-  labels,
   created,
   by,
   favorite,
@@ -37,7 +65,7 @@ const Item = ({
   setArchived,
   showCollectionName,
   onEntityClick,
-}) => (
+}: ItemProps) => (
   <div className={cx("hover-parent hover--visibility", S.item)}>
     <div className="flex flex-full align-center">
       <div
@@ -75,7 +103,6 @@ const Item = ({
         id={id}
         name={name}
         description={description}
-        labels={labels}
         favorite={favorite}
         collection={showCollectionName && collection}
         setFavorited={setFavorited}
@@ -89,7 +116,7 @@ const Item = ({
           <ModalWithTrigger
             full
             triggerElement={
-              <Tooltip tooltip={t`Move to a collection`}>
+              <Tooltip tooltip={t`Mover a una colección`}>
                 <Icon
                   className="text-light-blue cursor-pointer text-brand-hover transition-color mx2"
                   name="move"
@@ -103,7 +130,7 @@ const Item = ({
               initialCollectionId={collection && collection.id}
             />
           </ModalWithTrigger>
-          <Tooltip tooltip={archived ? t`Unarchive` : t`Archive`}>
+          <Tooltip tooltip={archived ? t`Desarchivar` : t`Archivar`}>
             <Icon
               className="text-light-blue cursor-pointer text-brand-hover transition-color"
               name={archived ? "unarchive" : "archive"}
@@ -124,7 +151,6 @@ Item.propTypes = {
   created: PropTypes.string.isRequired,
   description: PropTypes.string,
   by: PropTypes.string.isRequired,
-  labels: PropTypes.array.isRequired,
   collection: PropTypes.object,
   selected: PropTypes.bool.isRequired,
   favorite: PropTypes.bool.isRequired,
@@ -143,12 +169,11 @@ const ItemBody = pure(
     id,
     name,
     description,
-    labels,
     favorite,
     collection,
     setFavorited,
     onEntityClick,
-  }) => (
+  }: ItemBodyProps) => (
     <div className={S.itemBody}>
       <div className={cx("flex", S.itemTitle)}>
         <Link
@@ -167,7 +192,7 @@ const ItemBody = pure(
         {collection && <CollectionBadge collection={collection} />}
         {favorite != null &&
           setFavorited && (
-            <Tooltip tooltip={favorite ? t`Unfavorite` : t`Favorite`}>
+            <Tooltip tooltip={favorite ? t`No favorito` : t`Favorito`}>
               <Icon
                 className={cx(
                   "flex cursor-pointer",
@@ -180,7 +205,6 @@ const ItemBody = pure(
               />
             </Tooltip>
           )}
-        <Labels labels={labels} />
       </div>
       <div
         className={cx(
@@ -188,7 +212,7 @@ const ItemBody = pure(
           { "text-light-blue": !description },
         )}
       >
-        {description ? description : t`No description yet`}
+        {description ? description : t`Sin descripción aún`}
       </div>
     </div>
   ),
@@ -203,10 +227,10 @@ ItemBody.propTypes = {
 };
 
 const ItemCreated = pure(
-  ({ created, by }) =>
+  ({ created, by }: ItemCreatedProps) =>
     created || by ? (
       <div className={S.itemSubtitle}>
-        {t`Created` + (created ? ` ${created}` : ``) + (by ? t` by ${by}` : ``)}
+        {t`Creado` + (created ? ` ${created}` : ``) + (by ? t` por ${by}` : ``)}
       </div>
     ) : null,
 );

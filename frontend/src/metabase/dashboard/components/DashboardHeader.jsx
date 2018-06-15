@@ -2,7 +2,7 @@
 
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-
+import { t } from "c-3po";
 import ActionButton from "metabase/components/ActionButton.jsx";
 import AddToDashSelectQuestionModal from "./AddToDashSelectQuestionModal.jsx";
 import ArchiveDashboardModal from "./ArchiveDashboardModal.jsx";
@@ -156,7 +156,7 @@ export default class DashboardHeader extends Component {
         className="Button Button--small"
         onClick={() => this.onCancel()}
       >
-        Cancel
+        {t`Cancelar`}
       </a>,
       <ModalWithTrigger
         key="archive"
@@ -174,10 +174,10 @@ export default class DashboardHeader extends Component {
         key="save"
         actionFn={() => this.onSave()}
         className="Button Button--small Button--primary"
-        normalText="Save"
-        activeText="Saving…"
-        failedText="Save failed"
-        successText="Saved"
+        normalText={t`Guardar`}
+        activeText={t`Guardando…`}
+        failedText={t`Error al guardar`}
+        successText={t`Guardado`}
       />,
     ];
   }
@@ -211,10 +211,10 @@ export default class DashboardHeader extends Component {
           key="add"
           ref="addQuestionModal"
           triggerElement={
-            <Tooltip tooltip="Add a question">
+            <Tooltip tooltip={t`Agrega una pregunta`}>
               <span
                 data-metabase-event="Dashboard;Add Card Modal"
-                title="Add a question to this dashboard"
+                title={t`Agrega una pregunta a este tablero de control`}
               >
                 <Icon
                   className={cx("text-brand-hover cursor-pointer", {
@@ -243,13 +243,13 @@ export default class DashboardHeader extends Component {
       // Parameters
       buttons.push(
         <span>
-          <Tooltip tooltip="Add a filter">
+          <Tooltip tooltip={t`Agrega un filtro`}>
             <a
               key="parameters"
               className={cx("text-brand-hover", {
                 "text-brand": this.state.modal == "parameters",
               })}
-              title="Parameters"
+              title={t`Parámetros`}
               onClick={() => this.setState({ modal: "parameters" })}
             >
               <Icon name="funneladd" size={16} />
@@ -270,11 +270,11 @@ export default class DashboardHeader extends Component {
 
       // Add text card button
       buttons.push(
-        <Tooltip tooltip="Add a text box">
+        <Tooltip tooltip={t`Agrega un cuadro de texto`}>
           <a
             data-metabase-event="Dashboard;Add Text Box"
             key="add-text"
-            title="Add a text box"
+            title={t`Agrega un cuadro de texto`}
             className="text-brand-hover cursor-pointer"
             onClick={() => this.onAddTextBox()}
           >
@@ -284,7 +284,7 @@ export default class DashboardHeader extends Component {
       );
 
       buttons.push(
-        <Tooltip tooltip="Revision history">
+        <Tooltip tooltip={t`Historial de revisiones`}>
           <Link
             to={location.pathname + "/history"}
             data-metabase-event={"Dashboard;Revisions"}
@@ -297,11 +297,11 @@ export default class DashboardHeader extends Component {
 
     if (!isFullscreen && !isEditing && canEdit) {
       buttons.push(
-        <Tooltip tooltip="Edit dashboard">
+        <Tooltip tooltip={t`Editar tablero`}>
           <a
             data-metabase-event="Dashboard;Edit"
             key="edit"
-            title="Edit Dashboard Layout"
+            title={t`Editar el diseño del tablero`}
             className="text-brand-hover cursor-pointer"
             onClick={() => this.onEdit()}
           >
@@ -335,12 +335,12 @@ export default class DashboardHeader extends Component {
         isEditing={this.props.isEditing}
         isEditingInfo={this.props.isEditing}
         headerButtons={this.getHeaderButtons()}
-        editingTitle="You are editing a dashboard"
+        editingTitle={t`Estás editando un tablero de control`}
         editingButtons={this.getEditingButtons()}
         setItemAttributeFn={this.props.setDashboardAttribute}
         headerModalMessage={
           this.props.isEditingParameter
-            ? "Select the field that should be filtered for each card"
+            ? t`Selecciona el campo que debe filtrarse para cada tarjeta`
             : null
         }
         onHeaderModalDone={() => this.props.setEditingParameter(null)}

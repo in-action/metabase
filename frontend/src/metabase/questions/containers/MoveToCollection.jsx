@@ -49,7 +49,7 @@ export default class MoveToCollection extends Component {
     const { currentCollection, error } = this.state;
     return (
       <ModalContent
-        title={t`Which collection should this be in?`}
+        title={t`¿En qué colección debería estar?`}
         footer={
           <div>
             {error && (
@@ -58,14 +58,14 @@ export default class MoveToCollection extends Component {
               </span>
             )}
             <Button className="mr1" onClick={onClose}>
-              {t`Cancel`}
+              {t`Cancelar`}
             </Button>
             <Button
               primary
               disabled={currentCollection.id === undefined}
               onClick={() => this.onMove(currentCollection)}
             >
-              {t`Move`}
+              {t`Mover`}
             </Button>
           </div>
         }
@@ -78,7 +78,7 @@ export default class MoveToCollection extends Component {
               className="List text-brand ml-auto mr-auto"
               style={{ width: 520 }}
             >
-              {[{ name: t`None`, id: null }]
+              {[{ name: t`Ninguna`, id: null }]
                 .concat(collections)
                 .map((collection, index) => (
                   <li
