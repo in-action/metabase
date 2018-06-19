@@ -8,8 +8,6 @@ import { t } from "c-3po";
 import Input from "metabase/components/Input.jsx";
 import ProgressBar from "metabase/components/ProgressBar.jsx";
 
-import { normal } from "metabase/lib/colors";
-
 import _ from "underscore";
 import cx from "classnames";
 
@@ -52,7 +50,7 @@ export default class MetadataTable extends Component {
   }
 
   renderVisibilityType(text, type, any) {
-    let classes = cx(
+    var classes = cx(
       "mx1",
       "text-bold",
       "text-brand-hover",
@@ -75,7 +73,7 @@ export default class MetadataTable extends Component {
   }
 
   renderVisibilityWidget() {
-    let subTypes;
+    var subTypes;
     if (this.props.tableMetadata.visibility_type) {
       subTypes = (
         <span id="VisibilitySubTypes" className="border-left mx2">
@@ -101,7 +99,7 @@ export default class MetadataTable extends Component {
     }
 
     return (
-      <div className="MetadataTable px3">
+      <div className="MetadataTable px3 flex-full">
         <div className="MetadataTable-title flex flex-column bordered rounded">
           <Input
             className="AdminInput TableEditor-table-name text-bold border-bottom rounded-top"
@@ -122,12 +120,7 @@ export default class MetadataTable extends Component {
           {this.renderVisibilityWidget()}
           <span className="flex-align-right flex align-center">
             <span className="text-uppercase mr1">{t`Metadata Strength`}</span>
-            <span style={{ width: 64 }}>
-              <ProgressBar
-                percentage={tableMetadata.metadataStrength}
-                color={normal.grey2}
-              />
-            </span>
+            <ProgressBar percentage={tableMetadata.metadataStrength} />
           </span>
         </div>
         <div className={"mt2 " + (this.isHidden() ? "disabled" : "")}>

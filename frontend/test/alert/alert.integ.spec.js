@@ -1,7 +1,6 @@
 import {
   createSavedQuestion,
   createTestStore,
-  createAllUsersWritableCollection,
   forBothAdminsAndNormalUsers,
   useSharedAdminLogin,
   useSharedNormalLogin,
@@ -11,13 +10,7 @@ import { click, clickButton } from "__support__/enzyme_utils";
 import { fetchTableMetadata } from "metabase/redux/metadata";
 import { mount } from "enzyme";
 import { setIn } from "icepick";
-import {
-  AlertApi,
-  CardApi,
-  PulseApi,
-  UserApi,
-  CollectionsApi,
-} from "metabase/services";
+import { AlertApi, CardApi, PulseApi, UserApi } from "metabase/services";
 import Question from "metabase-lib/lib/Question";
 import * as Urls from "metabase/lib/urls";
 import { INITIALIZE_QB, QUERY_COMPLETED } from "metabase/query_builder/actions";
@@ -88,7 +81,6 @@ const initQbWithAlertMenuItemClicked = async (
 };
 
 describe("Alerts", () => {
-  let collection = null;
   let rawDataQuestion = null;
   let timeSeriesQuestion = null;
   let timeSeriesWithGoalQuestion = null;
@@ -100,9 +92,6 @@ describe("Alerts", () => {
 
     const store = await createTestStore();
 
-    // create a collection which all users have write permissions in
-    collection = await createAllUsersWritableCollection();
-
     // table metadata is needed for `Question.alertType()` calls
     await store.dispatch(fetchTableMetadata(1));
     const metadata = getMetadata(store.getState());
@@ -112,8 +101,7 @@ describe("Alerts", () => {
         .query()
         .addFilter(["=", ["field-id", 4], 123456])
         .question()
-        .setDisplayName("Just raw, untamed data")
-        .setCollectionId(collection.id),
+        .setDisplayName("Just raw, untamed data"),
     );
 
     timeSeriesQuestion = await createSavedQuestion(
@@ -127,8 +115,7 @@ describe("Alerts", () => {
           "graph.dimensions": ["CREATED_AT"],
           "graph.metrics": ["count"],
         })
-        .setDisplayName("Time series line")
-        .setCollectionId(collection.id),
+        .setDisplayName("Time series line"),
     );
 
     timeSeriesWithGoalQuestion = await createSavedQuestion(
@@ -144,8 +131,7 @@ describe("Alerts", () => {
           "graph.dimensions": ["CREATED_AT"],
           "graph.metrics": ["count"],
         })
-        .setDisplayName("Time series line with goal")
-        .setCollectionId(collection.id),
+        .setDisplayName("Time series line with goal"),
     );
 
     timeMultiSeriesWithGoalQuestion = await createSavedQuestion(
@@ -162,10 +148,8 @@ describe("Alerts", () => {
           "graph.dimensions": ["CREATED_AT"],
           "graph.metrics": ["count", "sum"],
         })
-        .setDisplayName("Time multiseries line with goal")
-        .setCollectionId(collection.id),
+        .setDisplayName("Time multiseries line with goal"),
     );
-
     progressBarQuestion = await createSavedQuestion(
       Question.create({ databaseId: 1, tableId: 1, metadata })
         .query()
@@ -173,8 +157,7 @@ describe("Alerts", () => {
         .question()
         .setDisplay("progress")
         .setVisualizationSettings({ "progress.goal": 50 })
-        .setDisplayName("Progress bar question")
-        .setCollectionId(collection.id),
+        .setDisplayName("Progress bar question"),
     );
   });
 
@@ -184,12 +167,11 @@ describe("Alerts", () => {
     await CardApi.delete({ cardId: timeSeriesWithGoalQuestion.id() });
     await CardApi.delete({ cardId: timeMultiSeriesWithGoalQuestion.id() });
     await CardApi.delete({ cardId: progressBarQuestion.id() });
-    await CollectionsApi.update({ id: collection.id, archived: true });
   });
 
   describe("missing email/slack credentials", () => {
-    forBothAdminsAndNormalUsers(() => {
-      it("should prompt you to add email/slack credentials", async () => {
+    it("should prompt you to add email/slack credentials", async () => {
+      await forBothAdminsAndNormalUsers(async () => {
         MetabaseCookies.getHasSeenAlertSplash = () => false;
 
         const store = await createTestStore();
@@ -315,19 +297,21 @@ describe("Alerts", () => {
     });
 
     it("should show you the first time educational screen", async () => {
-      useSharedNormalLogin();
-      const { app, store } = await initQbWithAlertMenuItemClicked(
-        rawDataQuestion,
-        { hasSeenAlertSplash: false },
-      );
+      await forBothAdminsAndNormalUsers(async () => {
+        useSharedNormalLogin();
+        const { app, store } = await initQbWithAlertMenuItemClicked(
+          rawDataQuestion,
+          { hasSeenAlertSplash: false },
+        );
 
-      await store.waitForActions([FETCH_PULSE_FORM_INPUT]);
-      const alertModal = app.find(QueryHeader).find(".test-modal");
-      const educationalScreen = alertModal.find(AlertEducationalScreen);
+        await store.waitForActions([FETCH_PULSE_FORM_INPUT]);
+        const alertModal = app.find(QueryHeader).find(".test-modal");
+        const educationalScreen = alertModal.find(AlertEducationalScreen);
 
-      clickButton(educationalScreen.find(Button));
-      const creationScreen = alertModal.find(CreateAlertModalContent);
-      expect(creationScreen.length).toBe(1);
+        clickButton(educationalScreen.find(Button));
+        const creationScreen = alertModal.find(CreateAlertModalContent);
+        expect(creationScreen.length).toBe(1);
+      });
     });
 
     it("should support 'rows present' alert for raw data questions", async () => {

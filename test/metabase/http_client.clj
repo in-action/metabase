@@ -6,8 +6,7 @@
             [clojure.tools.logging :as log]
             [metabase
              [config :as config]
-             [util :as u]]
-            [metabase.util.date :as du]))
+             [util :as u]]))
 
 ;;; build-url
 
@@ -41,8 +40,7 @@
         (map? response) (->> response
                              (map (fn [[k v]]
                                     {k (cond
-                                         ;; Our tests only run in UTC, parsing timestamp strings as UTC
-                                         (contains? auto-deserialize-dates-keys k) (du/->Timestamp v du/utc)
+                                         (contains? auto-deserialize-dates-keys k) (u/->Timestamp v)
                                          (coll? v) (auto-deserialize-dates v)
                                          :else v)}))
                              (into {}))

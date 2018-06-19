@@ -1,7 +1,6 @@
 /* eslint "react/prop-types": "warn" */
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import fitViewport from "metabase/hoc/FitViewPort";
 
 import Setup from "../components/Setup.jsx";
 
@@ -29,7 +28,6 @@ const mapDispatchToProps = {
 };
 
 @connect(mapStateToProps, mapDispatchToProps)
-@fitViewport
 export default class SetupApp extends Component {
   render() {
     return <Setup {...this.props} />;

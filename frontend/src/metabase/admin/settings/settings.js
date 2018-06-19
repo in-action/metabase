@@ -1,5 +1,4 @@
 import {
-  createAction,
   createThunkAction,
   handleActions,
   combineReducers,
@@ -71,13 +70,6 @@ export const sendTestEmail = createThunkAction(SEND_TEST_EMAIL, function() {
     }
   };
 });
-
-export const CLEAR_EMAIL_SETTINGS =
-  "metabase/admin/settings/CLEAR_EMAIL_SETTINGS";
-
-export const clearEmailSettings = createAction(CLEAR_EMAIL_SETTINGS, () =>
-  EmailApi.clear(),
-);
 
 export const UPDATE_SLACK_SETTINGS =
   "metabase/admin/settings/UPDATE_SLACK_SETTINGS";

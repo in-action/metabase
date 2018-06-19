@@ -1,9 +1,10 @@
 (ns metabase.api.ldap
   "/api/ldap endpoints"
-  (:require [clojure.set :as set]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
+            [clojure.set :as set]
             [compojure.core :refer [PUT]]
             [metabase.api.common :refer :all]
+            [metabase.config :as config]
             [metabase.integrations.ldap :as ldap]
             [metabase.models.setting :as setting]
             [metabase.util.schema :as su]))

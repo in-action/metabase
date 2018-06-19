@@ -15,7 +15,7 @@ import {
   FETCH_SEGMENT_REVISIONS,
 } from "metabase/redux/metadata";
 
-import Questions from "metabase/entities/questions";
+import { LOAD_ENTITIES } from "metabase/questions/questions";
 
 import SegmentListContainer from "metabase/reference/segments/SegmentListContainer";
 import SegmentDetailContainer from "metabase/reference/segments/SegmentDetailContainer";
@@ -80,12 +80,12 @@ describe("The Reference Section", () => {
     });
 
     describe("With Segments State", async () => {
-      let segmentIds = [];
+      var segmentIds = [];
 
       beforeAll(async () => {
         // Create some segments to have something to look at
-        let segment = await SegmentApi.create(segmentDef);
-        let anotherSegment = await SegmentApi.create(anotherSegmentDef);
+        var segment = await SegmentApi.create(segmentDef);
+        var anotherSegment = await SegmentApi.create(anotherSegmentDef);
         segmentIds.push(segment.id);
         segmentIds.push(anotherSegment.id);
       });
@@ -137,10 +137,7 @@ describe("The Reference Section", () => {
         const store = await createTestStore();
         store.pushPath("/reference/segments/" + segmentIds[0] + "/questions");
         mount(store.connectContainer(<SegmentQuestionsContainer />));
-        await store.waitForActions([
-          FETCH_SEGMENT_TABLE,
-          Questions.actions.fetchList,
-        ]);
+        await store.waitForActions([FETCH_SEGMENT_TABLE, LOAD_ENTITIES]);
       });
       // segment revisions
       it("Should show revisions", async () => {
@@ -154,7 +151,7 @@ describe("The Reference Section", () => {
       });
 
       it("Should see a newly asked question in its questions list", async () => {
-        let card = await CardApi.create(segmentCardDef);
+        var card = await CardApi.create(segmentCardDef);
 
         expect(card.name).toBe(segmentCardDef.name);
 
@@ -163,10 +160,7 @@ describe("The Reference Section", () => {
         const store = await createTestStore();
         store.pushPath("/reference/segments/" + segmentIds[0] + "/questions");
         mount(store.connectContainer(<SegmentQuestionsContainer />));
-        await store.waitForActions([
-          FETCH_SEGMENT_TABLE,
-          Questions.actions.fetchList,
-        ]);
+        await store.waitForActions([FETCH_SEGMENT_TABLE, LOAD_ENTITIES]);
       });
     });
   });

@@ -36,7 +36,6 @@ export default class Popover extends Component {
     id: PropTypes.string,
     isOpen: PropTypes.bool,
     hasArrow: PropTypes.bool,
-    hasBackground: PropTypes.bool,
     // target: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
     tetherOptions: PropTypes.object,
     // used to prevent popovers from being taller than the screen
@@ -62,7 +61,6 @@ export default class Popover extends Component {
   static defaultProps = {
     isOpen: true,
     hasArrow: true,
-    hasBackground: true,
     verticalAttachments: ["top", "bottom"],
     horizontalAttachments: ["center", "left", "right"],
     alignVerticalEdge: false,
@@ -135,9 +133,7 @@ export default class Popover extends Component {
           className={cx(
             "PopoverBody",
             {
-              "PopoverBody--withBackground": this.props.hasBackground,
-              "PopoverBody--withArrow":
-                this.props.hasArrow && this.props.hasBackground,
+              "PopoverBody--withArrow": this.props.hasArrow,
               "PopoverBody--autoWidth": this.props.autoWidth,
             },
             // TODO kdoh 10/16/2017 we should eventually remove this
@@ -290,7 +286,7 @@ export default class Popover extends Component {
     );
 
     if (isOpen) {
-      let tetherOptions = {
+      var tetherOptions = {
         element: popoverElement,
         target: this._getTarget(),
       };

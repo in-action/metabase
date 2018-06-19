@@ -1,22 +1,20 @@
 (ns metabase.sample-dataset-test
   "Tests to make sure the Sample Dataset syncs the way we would expect."
   (:require [expectations :refer :all]
-            [metabase
-             [sample-data :as sample-data]
-             [sync :as sync]
-             [util :as u]]
             [metabase.models
              [database :refer [Database]]
              [field :refer [Field]]
              [table :refer [Table]]]
-            [toucan
-             [db :as db]
-             [hydrate :refer [hydrate]]]
+            [metabase.sample-data :as sample-data]
+            [metabase.sync :as sync]
+            [metabase.util :as u]
+            [toucan.db :as db]
+            [toucan.hydrate :refer [hydrate]]
             [toucan.util.test :as tt]))
 
 ;;; ---------------------------------------------------- Tooling -----------------------------------------------------
 
-;; These tools are pretty sophisticated for the amount of tests we have!
+;; These tools are pretty sophisticated for the amount of
 
 (defn- sample-dataset-db []
   {:details (#'sample-data/db-details)
@@ -57,11 +55,11 @@
    :visibility_type  :normal
    :preview_display  true
    :display_name     "Name"
-   :fingerprint      {:global {:distinct-count 2499}
+   :fingerprint      {:global {:distinct-count 2500}
                       :type   {:type/Text {:percent-json   0.0
                                            :percent-url    0.0
                                            :percent-email  0.0
-                                           :average-length 13.532}}}
+                                           :average-length 13.516}}}
    :base_type        :type/Text}
   (with-temp-sample-dataset-db [db]
     (-> (field db "PEOPLE" "NAME")

@@ -11,7 +11,7 @@ import * as actions from "metabase/reference/reference";
 
 import { getDatabaseId, getIsEditing } from "../selectors";
 
-import Dashboards from "metabase/entities/dashboards";
+import { fetchDashboards } from "metabase/dashboards/dashboards";
 
 const mapStateToProps = (state, props) => ({
   databaseId: getDatabaseId(state, props),
@@ -19,7 +19,7 @@ const mapStateToProps = (state, props) => ({
 });
 
 const mapDispatchToProps = {
-  fetchDashboards: Dashboards.actions.fetchList,
+  fetchDashboards,
   ...metadataActions,
   ...actions,
 };

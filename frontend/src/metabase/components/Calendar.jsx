@@ -129,7 +129,7 @@ export default class Calendar extends Component {
   }
 
   renderWeeks(current) {
-    let weeks = [],
+    var weeks = [],
       done = false,
       date = moment(current)
         .startOf("month")

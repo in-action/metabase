@@ -5,14 +5,14 @@
              [core :as t]]
             [medley.core :as m]
             [metabase.sync.interface :as i]
-            [metabase.util.date :as du]
+            [metabase.util :as u]
             [redux.core :as redux]
             [schema.core :as s]))
 
 (s/defn datetime-fingerprint :- i/DateTimeFingerprint
   "Generate a fingerprint containing information about values that belong to a `DateTime` Field."
   [values :- i/FieldSample]
-  (transduce (map du/str->date-time)
+  (transduce (map u/str->date-time)
              (redux/post-complete
               (redux/fuse {:earliest t/min-date
                            :latest   t/max-date})

@@ -2,6 +2,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router";
+import _ from "underscore";
 import { connect } from "react-redux";
 
 import LoadingAndErrorWrapper from "metabase/components/LoadingAndErrorWrapper.jsx";
@@ -14,11 +15,7 @@ import UserAvatar from "metabase/components/UserAvatar.jsx";
 import Icon from "metabase/components/Icon.jsx";
 import Tooltip from "metabase/components/Tooltip.jsx";
 import Button from "metabase/components/Button.jsx";
-import Radio from "metabase/components/Radio";
-
 import { t, jt } from "c-3po";
-import _ from "underscore";
-import moment from "moment";
 import EditUserForm from "../components/EditUserForm.jsx";
 import UserActionsSelect from "../components/UserActionsSelect.jsx";
 import UserGroupSelect from "../components/UserGroupSelect.jsx";
@@ -26,19 +23,17 @@ import UserGroupSelect from "../components/UserGroupSelect.jsx";
 export const MODAL_ADD_PERSON = "MODAL_ADD_PERSON";
 export const MODAL_EDIT_DETAILS = "MODAL_EDIT_DETAILS";
 export const MODAL_INVITE_RESENT = "MODAL_INVITE_RESENT";
-export const MODAL_DEACTVIATE_USER = "MODAL_DEACTVIATE_USER";
-export const MODAL_REACTIVATE_USER = "MODAL_REACTIVATE_USER";
+export const MODAL_REMOVE_USER = "MODAL_REMOVE_USER";
 export const MODAL_RESET_PASSWORD = "MODAL_RESET_PASSWORD";
 export const MODAL_RESET_PASSWORD_MANUAL = "MODAL_RESET_PASSWORD_MANUAL";
 export const MODAL_RESET_PASSWORD_EMAIL = "MODAL_RESET_PASSWORD_EMAIL";
 export const MODAL_USER_ADDED_WITH_INVITE = "MODAL_USER_ADDED_WITH_INVITE";
 export const MODAL_USER_ADDED_WITH_PASSWORD = "MODAL_USER_ADDED_WITH_PASSWORD";
 
-import { getSortedUsers, getModal, getGroups } from "../selectors";
+import { getUsers, getModal, getGroups } from "../selectors";
 import {
   createUser,
-  deactivateUser,
-  reactivateUser,
+  deleteUser,
   fetchUsers,
   resetPasswordManually,
   resetPasswordViaEmail,
@@ -53,7 +48,7 @@ import {
 
 const mapStateToProps = (state, props) => {
   return {
-    users: getSortedUsers(state, props),
+    users: getUsers(state, props),
     modal: getModal(state, props),
     user: state.currentUser,
     groups: getGroups(state, props),
@@ -62,8 +57,7 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = {
   createUser,
-  deactivateUser,
-  reactivateUser,
+  deleteUser,
   fetchUsers,
   resetPasswordManually,
   resetPasswordViaEmail,
@@ -90,8 +84,7 @@ export default class PeopleListingApp extends Component {
     groups: PropTypes.array,
     modal: PropTypes.object,
     createUser: PropTypes.func.isRequired,
-    deactivateUser: PropTypes.func.isRequired,
-    reactivateUser: PropTypes.func.isRequired,
+    deleteUser: PropTypes.func.isRequired,
     fetchUsers: PropTypes.func.isRequired,
     resetPasswordManually: PropTypes.func.isRequired,
     resetPasswordViaEmail: PropTypes.func.isRequired,
@@ -116,7 +109,10 @@ export default class PeopleListingApp extends Component {
     }
   }
 
-  onAddPerson = async user => {
+  async onAddPerson(user) {
+    // close the modal no matter what
+    this.props.showModal(null);
+
     if (user) {
       let modal = MODAL_USER_ADDED_WITH_INVITE;
 
@@ -127,7 +123,7 @@ export default class PeopleListingApp extends Component {
       }
 
       // create the user
-      await this.props.createUser(user);
+      this.props.createUser(user);
 
       // carry on
       this.props.showModal({
@@ -136,17 +132,17 @@ export default class PeopleListingApp extends Component {
           user: user,
         },
       });
-    } else {
-      this.props.showModal(null);
     }
-  };
+  }
 
-  onEditDetails = async user => {
-    if (user) {
-      await this.props.updateUser(user);
-    }
+  onEditDetails(user) {
+    // close the modal no matter what
     this.props.showModal(null);
-  };
+
+    if (user) {
+      this.props.updateUser(user);
+    }
+  }
 
   onPasswordResetConfirm(user) {
     if (MetabaseSettings.isEmailConfigured()) {
@@ -176,14 +172,9 @@ export default class PeopleListingApp extends Component {
     }
   }
 
-  onDeactivateUserConfirm(user) {
+  onRemoveUserConfirm(user) {
     this.props.showModal(null);
-    this.props.deactivateUser(user);
-  }
-
-  onReactivateUserConfirm(user) {
-    this.props.showModal(null);
-    this.props.reactivateUser(user);
+    this.props.deleteUser(user);
   }
 
   onCloseModal = () => {
@@ -195,7 +186,7 @@ export default class PeopleListingApp extends Component {
       <Modal title={t`Who do you want to add?`} onClose={this.onCloseModal}>
         <EditUserForm
           buttonText={t`Add`}
-          submitFn={this.onAddPerson}
+          submitFn={this.onAddPerson.bind(this)}
           groups={this.props.groups}
         />
       </Modal>
@@ -207,10 +198,12 @@ export default class PeopleListingApp extends Component {
 
     return (
       <Modal
+        full
+        form
         title={t`Edit ${user.first_name}'s details`}
         onClose={this.onCloseModal}
       >
-        <EditUserForm user={user} submitFn={this.onEditDetails} />
+        <EditUserForm user={user} submitFn={this.onEditDetails.bind(this)} />
       </Modal>
     );
   }
@@ -220,6 +213,7 @@ export default class PeopleListingApp extends Component {
 
     return (
       <Modal
+        small
         title={t`${user.first_name} has been added`}
         footer={[
           <Button
@@ -227,10 +221,9 @@ export default class PeopleListingApp extends Component {
           >{t`Add another person`}</Button>,
           <Button primary onClick={this.onCloseModal}>{t`Done`}</Button>,
         ]}
-        formModal
         onClose={this.onCloseModal}
       >
-        <div>
+        <div className="px4 pb4">
           <div className="pb4">{jt`We couldn’t send them an email invitation,
                     so make sure to tell them to log in using ${(
                       <span className="text-bold">{user.email}</span>
@@ -267,11 +260,12 @@ export default class PeopleListingApp extends Component {
         ]}
         onClose={this.onCloseModal}
       >
-        <div className="pb4">
-          {jt`We’ve sent an invite to ${(
-            <span className="text-bold">{user.email}</span>
-          )} with instructions to set their password.`}
-        </div>
+        <div
+          style={{ paddingLeft: "5em", paddingRight: "5em" }}
+          className="pb4"
+        >{jt`We’ve sent an invite to ${(
+          <span className="text-bold">{user.email}</span>
+        )} with instructions to set their password.`}</div>
       </Modal>
     );
   }
@@ -294,43 +288,27 @@ export default class PeopleListingApp extends Component {
     );
   }
 
-  renderDeactivateUserModal(modalDetails) {
+  renderRemoveUserModal(modalDetails) {
     let { user } = modalDetails;
 
     return (
       <Modal
         small
-        title={t`Deactivate ${user.common_name}?`}
-        footer={[
-          <Button onClick={this.onCloseModal}>{t`Cancel`}</Button>,
-          <Button danger onClick={() => this.onDeactivateUserConfirm(user)}>
-            {t`Deactivate`}
-          </Button>,
-        ]}
-        onClose={this.onCloseModal}
-      >
-        {t`${user.first_name} won't be able to log in anymore.`}
-      </Modal>
-    );
-  }
-
-  renderReactivateUserModal(modalDetails) {
-    let { user } = modalDetails;
-
-    return (
-      <Modal
-        small
-        title={t`Reactivate ${user.common_name}'s account?`}
+        title={t`Remove ${user.common_name}?`}
         footer={[
           <Button onClick={this.onCloseModal}>{t`Cancel`}</Button>,
           <Button
-            primary
-            onClick={() => this.onReactivateUserConfirm(user)}
-          >{t`Reactivate`}</Button>,
+            className="Button--danger"
+            onClick={() => this.onRemoveUserConfirm(user)}
+          >{t`Remove`}</Button>,
         ]}
         onClose={this.onCloseModal}
       >
-        {t`They'll be able to log in again, and they'll be placed back into the groups they were in before their account was deactivated.`}
+        <div className="px4 pb4">
+          {t`${
+            user.first_name
+          } won't be able to log in anymore. This can't be undone.`}
+        </div>
       </Modal>
     );
   }
@@ -351,7 +329,7 @@ export default class PeopleListingApp extends Component {
         ]}
         onClose={this.onCloseModal}
       >
-        {t`Are you sure you want to do this?`}
+        <div className="px4 pb4">{t`Are you sure you want to do this?`}</div>
       </Modal>
     );
   }
@@ -365,15 +343,17 @@ export default class PeopleListingApp extends Component {
         title={t`${user.first_name}'s password has been reset`}
         footer={
           <button
-            className="Button Button--primary"
+            className="Button Button--primary mr2"
             onClick={this.onCloseModal}
           >{t`Done`}</button>
         }
         onClose={this.onCloseModal}
       >
-        <span className="pb3 block">{t`Here’s a temporary password they can use to log in and then change their password.`}</span>
+        <div className="px4 pb4">
+          <span className="pb3 block">{t`Here’s a temporary password they can use to log in and then change their password.`}</span>
 
-        <PasswordReveal password={password} />
+          <PasswordReveal password={password} />
+        </div>
       </Modal>
     );
   }
@@ -388,7 +368,7 @@ export default class PeopleListingApp extends Component {
         footer={<Button primary onClick={this.onCloseModal}>{t`Done`}</Button>}
         onClose={this.onCloseModal}
       >
-        {t`We've sent them an email with instructions for creating a new password.`}
+        <div className="px4 pb4">{t`We've sent them an email with instructions for creating a new password.`}</div>
       </Modal>
     );
   }
@@ -405,10 +385,8 @@ export default class PeopleListingApp extends Component {
         return this.renderUserAddedWithInviteModal(modalDetails);
       case MODAL_INVITE_RESENT:
         return this.renderInviteResentModal(modalDetails);
-      case MODAL_DEACTVIATE_USER:
-        return this.renderDeactivateUserModal(modalDetails);
-      case MODAL_REACTIVATE_USER:
-        return this.renderReactivateUserModal(modalDetails);
+      case MODAL_REMOVE_USER:
+        return this.renderRemoveUserModal(modalDetails);
       case MODAL_RESET_PASSWORD:
         return this.renderResetPasswordModal(modalDetails);
       case MODAL_RESET_PASSWORD_MANUAL:
@@ -422,40 +400,16 @@ export default class PeopleListingApp extends Component {
 
   render() {
     let { modal, users, groups } = this.props;
-    let { error, showDeactivated } = this.state;
+    let { error } = this.state;
 
     users = _.values(users).sort((a, b) => b.date_joined - a.date_joined);
-
-    const [active, deactivated] = _.partition(users, user => user.is_active);
-    if (deactivated.length === 0) {
-      showDeactivated = false;
-    } else if (active.length === 0) {
-      showDeactivated = true;
-    }
-
-    users = showDeactivated ? deactivated : active;
-
-    let title = t`People`;
-    if (deactivated.length > 0) {
-      title = (
-        <Radio
-          className="h6"
-          value={!!showDeactivated}
-          options={[
-            { name: t`Active`, value: false },
-            { name: t`Deactivated`, value: true },
-          ]}
-          onChange={showDeactivated => this.setState({ showDeactivated })}
-        />
-      );
-    }
 
     return (
       <LoadingAndErrorWrapper loading={!users} error={error}>
         {() => (
           <AdminPaneLayout
-            title={title}
-            buttonText={showDeactivated ? null : t`Add someone`}
+            title={t`People`}
+            buttonText={t`Add someone`}
             buttonAction={() =>
               this.props.showModal({ type: MODAL_ADD_PERSON })
             }
@@ -467,16 +421,9 @@ export default class PeopleListingApp extends Component {
                     <th>{t`Name`}</th>
                     <th />
                     <th>{t`Email`}</th>
-                    {showDeactivated
-                      ? [
-                          <th key="deactivated_at">{t`Deactivated`}</th>,
-                          <th key="actions" />,
-                        ]
-                      : [
-                          <th key="groups">{t`Groups`}</th>,
-                          <th key="last_login">{t`Last Login`}</th>,
-                          <th key="actions" />,
-                        ]}
+                    <th>{t`Groups`}</th>
+                    <th>{t`Last Login`}</th>
+                    <th />
                   </tr>
                 </thead>
                 <tbody>
@@ -508,50 +455,25 @@ export default class PeopleListingApp extends Component {
                         ) : null}
                       </td>
                       <td>{user.email}</td>
-                      {showDeactivated
-                        ? [
-                            <td key="deactivated_at">
-                              {moment(user.updated_at).fromNow()}
-                            </td>,
-                            <td key="actions">
-                              <Tooltip tooltip={t`Reactivate this account`}>
-                                <Icon
-                                  name="refresh"
-                                  className="text-grey-1 text-brand-hover cursor-pointer"
-                                  size={20}
-                                  onClick={() =>
-                                    this.props.showModal({
-                                      type: MODAL_REACTIVATE_USER,
-                                      details: { user },
-                                    })
-                                  }
-                                />
-                              </Tooltip>
-                            </td>,
-                          ]
-                        : [
-                            <td key="groups">
-                              <UserGroupSelect
-                                user={user}
-                                groups={groups}
-                                createMembership={this.props.createMembership}
-                                deleteMembership={this.props.deleteMembership}
-                              />
-                            </td>,
-                            <td key="last_login">
-                              {user.last_login
-                                ? moment(user.last_login).fromNow()
-                                : t`Never`}
-                            </td>,
-                            <td key="actions" className="text-right">
-                              <UserActionsSelect
-                                user={user}
-                                showModal={this.props.showModal}
-                                resendInvite={this.props.resendInvite}
-                                isActiveUser={this.props.user.id === user.id}
-                              />
-                            </td>,
-                          ]}
+                      <td>
+                        <UserGroupSelect
+                          user={user}
+                          groups={groups}
+                          createMembership={this.props.createMembership}
+                          deleteMembership={this.props.deleteMembership}
+                        />
+                      </td>
+                      <td>
+                        {user.last_login ? user.last_login.fromNow() : t`Never`}
+                      </td>
+                      <td className="text-right">
+                        <UserActionsSelect
+                          user={user}
+                          showModal={this.props.showModal}
+                          resendInvite={this.props.resendInvite}
+                          isActiveUser={this.props.user.id === user.id}
+                        />
+                      </td>
                     </tr>
                   ))}
                 </tbody>

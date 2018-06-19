@@ -25,7 +25,9 @@ import { isSameSeries } from "metabase/visualizations/lib/utils";
 
 import _ from "underscore";
 
-const PIN_MAP_TYPES = new Set(["pin", "heat", "grid"]);
+// NOTE Atte Keinänen 8/2/17: Heat/grid maps disabled in the first merged version of binning
+// const PIN_MAP_TYPES = new Set(["pin", "heat", "grid"]);
+const PIN_MAP_TYPES = new Set(["pin"]);
 
 export default class Map extends Component {
   static uiName = t`Map`;
@@ -48,9 +50,9 @@ export default class Map extends Component {
         options: [
           { name: t`Region map`, value: "region" },
           { name: t`Pin map`, value: "pin" },
-          // NOTE tlrobinson 4/13/18: Heat maps disabled until we can compute leaflet-heat options better
+          // NOTE Atte Keinänen 8/2/17: Heat/grid maps disabled in the first merged version of binning
           // { name: "Heat map", value: "heat" },
-          { name: "Grid map", value: "grid" },
+          // { name: "Grid map", value: "grid" }
         ],
       },
       getDefault: ([{ card, data: { cols } }], settings) => {
@@ -61,26 +63,19 @@ export default class Map extends Component {
           case "pin_map":
             return "pin";
           default:
+            // NOTE Atte Keinänen 8/2/17: Heat/grid maps disabled in the first merged version of binning
             if (hasLatitudeAndLongitudeColumns(cols)) {
-              const latitudeColumn = _.findWhere(cols, {
-                name: settings["map.latitude_column"],
-              });
-              const longitudeColumn = _.findWhere(cols, {
-                name: settings["map.longitude_column"],
-              });
-              if (
-                latitudeColumn &&
-                longitudeColumn &&
-                latitudeColumn.binning_info &&
-                longitudeColumn.binning_info
-              ) {
-                return "grid";
-                // NOTE tlrobinson 4/13/18: Heat maps disabled until we can compute leaflet-heat options better
-                // } else if (settings["map.metric_column"]) {
-                //   return "heat";
-              } else {
-                return "pin";
-              }
+              //     const latitudeColumn = _.findWhere(cols, { name: settings["map.latitude_column"] });
+              //     const longitudeColumn = _.findWhere(cols, { name: settings["map.longitude_column"] });
+              //     if (latitudeColumn && longitudeColumn && latitudeColumn.binning_info && longitudeColumn.binning_info) {
+              //         // lat/lon columns are binned, use grid by default
+              //         return "grid";
+              //     } else if (settings["map.metric_column"]) {
+              //         //
+              //         return "heat";
+              //     } else {
+              return "pin";
+              //     }
             } else {
               return "region";
             }
@@ -100,9 +95,9 @@ export default class Map extends Component {
         options: [
           { name: t`Tiles`, value: "tiles" },
           { name: t`Markers`, value: "markers" },
-          // NOTE tlrobinson 4/13/18: Heat maps disabled until we can compute leaflet-heat options better
+          // NOTE Atte Keinänen 8/2/17: Heat/grid maps disabled in the first merged version of binning
           // { name: "Heat", value: "heat" },
-          { name: "Grid", value: "grid" },
+          // { name: "Grid", value: "grid" }
         ],
       },
       getDefault: (series, vizSettings) =>

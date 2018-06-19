@@ -234,7 +234,6 @@
 
 
 (defrecord GoogleAnalyticsDriver []
-  :load-ns true
   clojure.lang.Named
   (getName [_] "Google Analytics"))
 

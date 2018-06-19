@@ -3,7 +3,7 @@
             [metabase.driver :as driver]))
 
 
-(defrecord ^:private TestDriver []
+(defrecord TestDriver []
   clojure.lang.Named
   (getName [_] "TestDriver"))
 

@@ -173,7 +173,7 @@ export default class QueryHeader extends Component {
 
   async onFetchRevisions({ entity, id }) {
     // TODO: reduxify
-    let revisions = await RevisionApi.list({ entity, id });
+    var revisions = await RevisionApi.list({ entity, id });
     this.setState({ revisions });
   }
 
@@ -203,7 +203,7 @@ export default class QueryHeader extends Component {
       id: card && card.dataset_query && card.dataset_query.database,
     });
 
-    let buttonSections = [];
+    var buttonSections = [];
 
     // A card that is either completely new or it has been derived from a saved question
     if (isNew && isDirty) {
@@ -213,7 +213,7 @@ export default class QueryHeader extends Component {
           key="save"
           ref="saveModal"
           triggerClasses="h4 text-grey-4 text-brand-hover text-uppercase"
-          triggerElement={t`Save`}
+          triggerElement="Save"
         >
           <SaveQuestionModal
             card={this.props.card}
@@ -222,7 +222,7 @@ export default class QueryHeader extends Component {
             // if saving modified question, don't show "add to dashboard" modal
             saveFn={card => this.onSave(card, false)}
             createFn={this.onCreate}
-            onClose={() => this.refs.saveModal && this.refs.saveModal.toggle()}
+            onClose={() => this.refs.saveModal.toggle()}
           />
         </ModalWithTrigger>,
       ]);
@@ -303,7 +303,7 @@ export default class QueryHeader extends Component {
               initialCollectionId={
                 this.props.card && this.props.card.collection_id
               }
-              setCollection={({ id }, collection) => {
+              setCollection={(questionId, collection) => {
                 this.props.onSetCardAttribute("collection", collection);
                 this.props.onSetCardAttribute("collection_id", collection.id);
               }}
@@ -437,7 +437,7 @@ export default class QueryHeader extends Component {
     ]);
 
     // data reference button
-    let dataReferenceButtonClasses = cx("transition-color", {
+    var dataReferenceButtonClasses = cx("transition-color", {
       "text-brand": this.props.isShowingDataReference,
       "text-brand-hover": !this.state.isShowingDataReference,
     });
@@ -544,7 +544,7 @@ export default class QueryHeader extends Component {
           badge={
             this.props.card.collection && (
               <Link
-                to={Urls.collection(this.props.card.collection.id)}
+                to={Urls.collection(this.props.card.collection)}
                 className="text-uppercase flex align-center no-decoration"
                 style={{
                   color: this.props.card.collection.color,

@@ -5,13 +5,7 @@
             [metabase.driver
              [generic-sql :as sql]
              [oracle :as oracle]]
-            [metabase.models
-             [database :refer [Database]]
-             [setting :as setting]]
-            [metabase.test.data :as data]
-            [metabase.test.data
-             [dataset-definitions :as defs]
-             [datasets :refer [expect-with-engine]]]
+            [metabase.test.data.datasets :refer [expect-with-engine]]
             [metabase.test.util :as tu])
   (:import metabase.driver.oracle.OracleDriver))
 

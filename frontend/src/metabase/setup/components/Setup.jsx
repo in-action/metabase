@@ -45,9 +45,7 @@ export default class Setup extends Component {
         {t`If you feel stuck`},{" "}
         <a
           className="link"
-          href={
-            "http://www.metabase.com/docs/" + tag + "/setting-up-metabase.html"
-          }
+          href={"http://www.metabase.com/docs/" + tag + "/setting-up-metabase"}
           target="_blank"
         >{t`our getting started guide`}</a>{" "}
         {t`is just a click away.`}
@@ -150,7 +148,7 @@ export default class Setup extends Component {
                   </div>
                   <div className="pt4 pb2">
                     <Link
-                      to="/"
+                      to="/ready"
                       className="Button Button--primary"
                       onClick={this.completeSetup.bind(this)}
                     >{t`Take me to Metabase`}</Link>

@@ -9,8 +9,6 @@ import _ from "underscore";
 
 import { loadTableAndForeignKeys } from "metabase/lib/table";
 
-import fitViewport from "metabase/hoc/FitViewPort";
-
 import QueryBuilderTutorial from "metabase/tutorial/QueryBuilderTutorial.jsx";
 
 import QueryHeader from "../components/QueryHeader.jsx";
@@ -28,7 +26,7 @@ import {
   getCard,
   getOriginalCard,
   getLastRunCard,
-  getFirstQueryResult,
+  getQueryResult,
   getQueryResults,
   getParameterValues,
   getIsDirty,
@@ -99,7 +97,7 @@ const mapStateToProps = (state, props) => {
     tableForeignKeys: getTableForeignKeys(state),
     tableForeignKeyReferences: getTableForeignKeyReferences(state),
 
-    result: getFirstQueryResult(state),
+    result: getQueryResult(state),
     results: getQueryResults(state),
     rawSeries: getRawSeries(state),
 
@@ -134,7 +132,6 @@ const mapDispatchToProps = {
 
 @connect(mapStateToProps, mapDispatchToProps)
 @title(({ card }) => (card && card.name) || t`Question`)
-@fitViewport
 export default class QueryBuilder extends Component {
   forceUpdateDebounced: () => void;
 
@@ -169,30 +166,16 @@ export default class QueryBuilder extends Component {
       nextProps.location.action === "POP" &&
       getURL(nextProps.location) !== getURL(this.props.location)
     ) {
-      // the browser forward/back button was pressed
       this.props.popState(nextProps.location);
-      // NOTE: Tom Robinson 4/16/2018: disabled for now. this is to enable links
-      // from qb to other qb questions but it's also triggering when changing
-      // the display type
-      // } else if (
-      //   nextProps.location.action === "PUSH" &&
-      //   getURL(nextProps.location) !== getURL(this.props.location) &&
-      //   nextProps.question &&
-      //   getURL(nextProps.location) !== nextProps.question.getUrl()
-      // ) {
-      //   // a link to a different qb url was clicked
-      //   this.props.initializeQB(nextProps.location, nextProps.params);
     } else if (
       this.props.location.hash !== "#?tutorial" &&
       nextProps.location.hash === "#?tutorial"
     ) {
-      // tutorial link was clicked
       this.props.initializeQB(nextProps.location, nextProps.params);
     } else if (
       getURL(nextProps.location) === "/question" &&
       getURL(this.props.location) !== "/question"
     ) {
-      // "New Question" link was clicked
       this.props.initializeQB(nextProps.location, nextProps.params);
     }
   }
@@ -222,7 +205,11 @@ export default class QueryBuilder extends Component {
   };
 
   render() {
-    return <LegacyQueryBuilder {...this.props} />;
+    return (
+      <div className="flex-full flex relative">
+        <LegacyQueryBuilder {...this.props} />
+      </div>
+    );
   }
 }
 
@@ -241,7 +228,7 @@ class LegacyQueryBuilder extends Component {
     const ModeFooter = mode && mode.ModeFooter;
 
     return (
-      <div className={this.props.fitClassNames}>
+      <div className="flex-full relative">
         <div
           className={cx("QueryBuilder flex flex-column bg-white spread", {
             "QueryBuilder--showSideDrawer": showDrawer,

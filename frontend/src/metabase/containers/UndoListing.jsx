@@ -2,45 +2,26 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import styled from "styled-components";
-import { space } from "styled-system";
-import { Flex } from "grid-styled";
-import { t } from "c-3po";
-import { capitalize, inflect } from "metabase/lib/formatting";
 
-import { normal } from "metabase/lib/colors";
+import S from "./UndoListing.css";
+
 import { dismissUndo, performUndo } from "metabase/redux/undo";
 import { getUndos } from "metabase/selectors/undo";
-
-import BodyComponent from "metabase/components/BodyComponent";
-import Card from "metabase/components/Card";
+import { t } from "c-3po";
 import Icon from "metabase/components/Icon";
-import Link from "metabase/components/Link";
+import BodyComponent from "metabase/components/BodyComponent";
 
-const mapStateToProps = (state, props) => ({
-  undos: getUndos(state, props),
-});
+import { CSSTransitionGroup } from "react-transition-group";
+
+const mapStateToProps = (state, props) => {
+  return {
+    undos: getUndos(state, props),
+  };
+};
 
 const mapDispatchToProps = {
   dismissUndo,
   performUndo,
-};
-
-const UndoList = styled.ul`
-  ${space};
-`;
-
-const DefaultMessage = ({
-  undo: { verb = t`modified`, count = 1, subject = t`item` },
-}) => (
-  <div>
-    {count > 1
-      ? t`${capitalize(verb)} ${count} ${inflect(subject, count)}`
-      : t`${capitalize(verb)} ${subject}`}
-  </div>
-);
-DefaultMessage.propTypes = {
-  undo: PropTypes.object.isRequired,
 };
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -55,36 +36,37 @@ export default class UndoListing extends Component {
   render() {
     const { undos, performUndo, dismissUndo } = this.props;
     return (
-      <UndoList m={2} className="fixed left bottom zF">
-        {undos.map(undo => (
-          <Card key={undo._domId} dark p={2} mt={1}>
-            <Flex align="center">
-              {typeof undo.message === "function" ? (
-                undo.message(undo)
-              ) : undo.message ? (
-                undo.message
-              ) : (
-                <DefaultMessage undo={undo || {}} />
-              )}
+      <ul className={S.listing}>
+        <CSSTransitionGroup
+          transitionName="UndoListing"
+          transitionEnterTimeout={300}
+          transitionLeaveTimeout={300}
+        >
+          {undos.map(undo => (
+            <li key={undo._domId} className={S.undo}>
+              <div className={S.message}>
+                {typeof undo.message === "function"
+                  ? undo.message(undo)
+                  : undo.message}
+              </div>
 
-              {undo.actions &&
-                undo.actions.length > 0 && (
-                  <Link
-                    ml={1}
+              {undo.actions && (
+                <div className={S.actions}>
+                  <a
+                    className={S.undoButton}
                     onClick={() => performUndo(undo.id)}
-                  >{t`Undo`}</Link>
-                )}
-              <Icon
-                ml={1}
-                color={normal.grey1}
-                hover={{ color: normal.grey2 }}
-                name="close"
-                onClick={() => dismissUndo(undo.id)}
-              />
-            </Flex>
-          </Card>
-        ))}
-      </UndoList>
+                  >{t`Undo`}</a>
+                  <Icon
+                    className={S.dismissButton}
+                    name="close"
+                    onClick={() => dismissUndo(undo.id)}
+                  />
+                </div>
+              )}
+            </li>
+          ))}
+        </CSSTransitionGroup>
+      </ul>
     );
   }
 }

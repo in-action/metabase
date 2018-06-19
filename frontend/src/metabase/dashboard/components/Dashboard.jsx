@@ -1,7 +1,5 @@
 /* @flow */
 
-// TODO: merge with metabase/dashboard/containers/Dashboard.jsx
-
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 

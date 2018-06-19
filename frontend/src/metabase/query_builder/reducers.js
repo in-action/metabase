@@ -30,7 +30,6 @@ import {
   UPDATE_QUESTION,
   SET_DATASET_QUERY,
   RUN_QUERY,
-  CLEAR_QUERY_RESULT,
   CANCEL_QUERY,
   QUERY_COMPLETED,
   QUERY_ERRORED,
@@ -250,17 +249,28 @@ export const lastRunCard = handleActions(
   null,
 );
 
+// NOTE Atte Keinänen 6/1/17: DEPRECATED, you should use queryResults instead
+export const queryResult = handleActions(
+  {
+    [RESET_QB]: { next: (state, { payload }) => null },
+    [QUERY_COMPLETED]: {
+      next: (state, { payload }) => payload.queryResults[0],
+    },
+    [QUERY_ERRORED]: {
+      next: (state, { payload }) => (payload ? payload : state),
+    },
+  },
+  null,
+);
+
 // The results of a query execution.  optionally an error if the query fails to complete successfully.
 export const queryResults = handleActions(
   {
     [RESET_QB]: { next: (state, { payload }) => null },
-    [QUERY_COMPLETED]: {
-      next: (state, { payload }) => payload.queryResults,
-    },
+    [QUERY_COMPLETED]: { next: (state, { payload }) => payload.queryResults },
     [QUERY_ERRORED]: {
-      next: (state, { payload }) => (payload ? [payload] : state),
+      next: (state, { payload }) => (payload ? payload : state),
     },
-    [CLEAR_QUERY_RESULT]: { next: (state, { payload }) => null },
   },
   null,
 );

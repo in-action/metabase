@@ -58,7 +58,7 @@ describe("The Reference Section", () => {
     it("should see databases", async () => {
       const store = await createTestStore();
       store.pushPath("/reference/databases/");
-      let container = mount(store.connectContainer(<DatabaseListContainer />));
+      var container = mount(store.connectContainer(<DatabaseListContainer />));
       await store.waitForActions([FETCH_REAL_DATABASES, END_LOADING]);
 
       expect(container.find(ReferenceHeader).length).toBe(1);
@@ -71,10 +71,10 @@ describe("The Reference Section", () => {
 
     // database list
     it("should not see saved questions in the database list", async () => {
-      let card = await CardApi.create(cardDef);
+      var card = await CardApi.create(cardDef);
       const store = await createTestStore();
       store.pushPath("/reference/databases/");
-      let container = mount(store.connectContainer(<DatabaseListContainer />));
+      var container = mount(store.connectContainer(<DatabaseListContainer />));
       await store.waitForActions([FETCH_REAL_DATABASES, END_LOADING]);
 
       expect(container.find(ReferenceHeader).length).toBe(1);
@@ -144,7 +144,7 @@ describe("The Reference Section", () => {
       mount(store.connectContainer(<TableQuestionsContainer />));
       await store.waitForActions([FETCH_DATABASE_METADATA, END_LOADING]);
 
-      let card = await CardApi.create(cardDef);
+      var card = await CardApi.create(cardDef);
 
       expect(card.name).toBe(cardDef.name);
 

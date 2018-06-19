@@ -3,7 +3,6 @@
 import d3 from "d3";
 
 import { clipPathReference } from "metabase/lib/dom";
-import { adjustYAxisTicksIfNeeded } from "./apply_axis";
 
 const X_LABEL_MIN_SPACING = 2; // minimum space we want to leave between labels
 const X_LABEL_ROTATE_90_THRESHOLD = 24; // tick width breakpoint for switching from 45° to 90°
@@ -379,9 +378,9 @@ function computeXAxisMargin(chart) {
   return Math.max(0, rotatedMaxSize.width - maxSize.height); // subtract the existing height
 }
 
-export function checkXAxisLabelOverlap(chart, selector = "g.x text") {
+function checkLabelOverlap(chart) {
   const rects = [];
-  for (const elem of chart.selectAll(selector)[0]) {
+  for (const elem of chart.selectAll("g.x text")[0]) {
     rects.push(elem.getBoundingClientRect());
     if (
       rects.length > 1 &&
@@ -423,7 +422,7 @@ function computeXAxisSpacing(chart) {
 function beforeRenderComputeXAxisLabelType(chart) {
   // treat graph.x_axis.axis_enabled === true as "auto"
   if (chart.settings["graph.x_axis.axis_enabled"] === true) {
-    const overlaps = checkXAxisLabelOverlap(chart);
+    const overlaps = checkLabelOverlap(chart);
     if (overlaps) {
       if (chart.isOrdinal()) {
         const spacing = computeXAxisSpacing(chart);
@@ -453,10 +452,6 @@ function beforeRenderFixMargins(chart) {
   // run before adjusting margins
   const mins = computeMinHorizontalMargins(chart);
   const xAxisMargin = computeXAxisMargin(chart);
-
-  // re-adjust Y axis ticks to account for xAxisMargin due to rotated labels
-  adjustYAxisTicksIfNeeded(chart.yAxis(), chart.height() - xAxisMargin);
-  adjustYAxisTicksIfNeeded(chart.rightYAxis(), chart.height() - xAxisMargin);
 
   // adjust the margins to fit the X and Y axis tick and label sizes, if enabled
   adjustMargin(

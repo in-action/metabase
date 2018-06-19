@@ -14,13 +14,14 @@
 
 (defn with-api-error-message
   "Return SCHEMA with an additional API-ERROR-MESSAGE that will be used to explain the error if a parameter fails
-   validation."
+   validation.
+
+   Has to be a schema (or similar) record type because a simple map would just end up adding a new required key.
+   One easy way to get around this is to just wrap your schema in `s/named`."
   {:style/indent 1}
   [schema api-error-message]
-  (if-not (record? schema)
-    ;; since this only works for record types, if `schema` isn't already one just wrap it in `s/named` to make it one
-    (recur (s/named schema api-error-message) api-error-message)
-    (assoc schema :api-error-message api-error-message)))
+  {:pre [(record? schema)]}
+  (assoc schema :api-error-message api-error-message))
 
 (defn api-param
   "Return SCHEMA with an additional API-PARAM-NAME key that will be used in the auto-generate documentation and in
@@ -33,7 +34,11 @@
 
      ;; GOOD - Documentation/errors will mention correct param name, `type`
      [:is {{dimension-type :type} :body}]
-     {dimension-type (su/api-param \"type\" DimensionType)}"
+     {dimension-type (su/api-param \"type\" DimensionType)}
+
+   Note that as with `with-api-error-message`, this only works on schemas that are record types. This works by adding
+   an extra property to the record, which wouldn't work for plain maps, because the extra key would just be considered
+   another requrired param. An easy way to get around this is to wrap a non-record type schema in `s/named`."
   {:style/indent 1}
   [api-param-name schema]
   {:pre [(record? schema)]}
@@ -91,7 +96,6 @@
   (with-api-error-message (s/constrained schema seq "Non-empty")
     (str (api-error-message schema) " " (tru "The array cannot be empty."))))
 
-
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                                 USEFUL SCHEMAS                                                 |
 ;;; +----------------------------------------------------------------------------------------------------------------+
@@ -123,11 +127,6 @@
    those values will be encoded as keywords at that point."
   (with-api-error-message (s/pred #(isa? (keyword %) :type/*) (tru "Valid field type (keyword or string)"))
     (tru "value must be a valid field type (keyword or string).")))
-
-(def EntityTypeKeywordOrString
-  "Validates entity type derivatives of `:entity/*`. Allows strings or keywords"
-  (with-api-error-message (s/pred #(isa? (keyword %) :entity/*) (tru "Valid entity type (keyword or string)"))
-   (tru "value must be a valid entity type (keyword or string).")))
 
 (def Map
   "Schema for a valid map."

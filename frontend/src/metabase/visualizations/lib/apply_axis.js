@@ -11,7 +11,6 @@ import { parseTimestamp } from "metabase/lib/time";
 
 import { computeTimeseriesTicksInterval } from "./timeseries";
 import { getFriendlyName } from "./utils";
-import { isHistogram } from "./renderer_utils";
 
 // label offset (doesn't increase padding)
 const X_LABEL_PADDING = 10;
@@ -26,7 +25,7 @@ function getNumTicks(axis) {
 
 /// adjust the number of ticks to display on the y Axis based on its height in pixels. Since y axis ticks
 /// are all the same height there's no need to do fancy measurement like we do below for the x axis.
-export function adjustYAxisTicksIfNeeded(axis, axisHeightPixels) {
+function adjustYAxisTicksIfNeeded(axis, axisHeightPixels) {
   const MIN_PIXELS_PER_TICK = 32;
 
   const numTicks = getNumTicks(axis);
@@ -272,11 +271,6 @@ export function applyChartOrdinalXAxis(chart, series, { xValues }) {
   } else {
     chart.xAxis().ticks(0);
     chart.xAxis().tickFormat("");
-  }
-
-  if (isHistogram(chart.settings)) {
-    // reduces x axis padding. see https://stackoverflow.com/a/44320663/113
-    chart._outerRangeBandPadding(0);
   }
 
   chart.x(d3.scale.ordinal().domain(xValues)).xUnits(dc.units.ordinal);

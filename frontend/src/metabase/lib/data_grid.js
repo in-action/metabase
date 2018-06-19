@@ -1,3 +1,5 @@
+import _ from "underscore";
+
 import * as SchemaMetadata from "metabase/lib/schema_metadata";
 import { formatValue } from "metabase/lib/formatting";
 
@@ -8,7 +10,7 @@ function compareNumbers(a, b) {
 export function pivot(data) {
   // find the lowest cardinality dimension and make it our "pivoted" column
   // TODO: we assume dimensions are in the first 2 columns, which is less than ideal
-  let pivotCol = 0,
+  var pivotCol = 0,
     normalCol = 1,
     cellCol = 2,
     pivotColValues = distinctValues(data, pivotCol),
@@ -17,7 +19,7 @@ export function pivot(data) {
     pivotCol = 1;
     normalCol = 0;
 
-    let tmp = pivotColValues;
+    var tmp = pivotColValues;
     pivotColValues = normalColValues;
     normalColValues = tmp;
   }
@@ -50,9 +52,9 @@ export function pivot(data) {
   });
 
   // fill it up with the data
-  for (let j = 0; j < data.rows.length; j++) {
-    let normalColIdx = normalColValues.lastIndexOf(data.rows[j][normalCol]);
-    let pivotColIdx = pivotColValues.lastIndexOf(data.rows[j][pivotCol]);
+  for (var j = 0; j < data.rows.length; j++) {
+    var normalColIdx = normalColValues.lastIndexOf(data.rows[j][normalCol]);
+    var pivotColIdx = pivotColValues.lastIndexOf(data.rows[j][pivotCol]);
 
     pivotedRows[normalColIdx][0] = data.rows[j][normalCol];
     // NOTE: we are hard coding the expectation that the metric is in the 3rd column
@@ -64,19 +66,18 @@ export function pivot(data) {
     if (idx === 0) {
       // first column is always the coldef of the normal column
       return data.cols[normalCol];
-    } else {
-      return {
-        ...data.cols[cellCol],
-        // `name` must be the same for conditional formatting, but put the
-        // formatted pivotted value in the `display_name`
-        display_name: formatValue(value, { column: data.cols[pivotCol] }) || "",
-        // for onVisualizationClick:
-        _dimension: {
-          value: value,
-          column: data.cols[pivotCol],
-        },
-      };
     }
+
+    var colDef = _.clone(data.cols[cellCol]);
+    colDef.name = colDef.display_name =
+      formatValue(value, { column: data.cols[pivotCol] }) || "";
+    // for onVisualizationClick:
+    colDef._dimension = {
+      value: value,
+      column: data.cols[pivotCol],
+    };
+    // delete colDef.id
+    return colDef;
   });
 
   return {
@@ -87,7 +88,7 @@ export function pivot(data) {
 }
 
 export function distinctValues(data, colIdx) {
-  let vals = data.rows.map(function(r) {
+  var vals = data.rows.map(function(r) {
     return r[colIdx];
   });
 

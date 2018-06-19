@@ -1,8 +1,7 @@
 (ns metabase.test.data.dataset-definitions
   "Definitions of various datasets for use in tests with `with-temp-db`."
   (:require [clojure.tools.reader.edn :as edn]
-            [metabase.test.data.interface :as di]
-            [metabase.util.date :as du])
+            [metabase.test.data.interface :as di])
   (:import java.sql.Time
            java.util.Calendar))
 
@@ -76,15 +75,6 @@
                        #(vec (concat % [{:field-name "null_only_date" :base-type :type/Date}]))
                        (fn [rows]
                          (mapv #(conj % nil) rows))
-                       (di/slurp-edn-table-def "test-data")))
-
-(di/def-database-definition test-data-with-timezones
-  (di/update-table-def "users"
-                       (fn [table-def]
-                         [(first table-def)
-                          {:field-name "last_login", :base-type :type/DateTimeWithTZ}
-                          (peek table-def)])
-                       identity
                        (di/slurp-edn-table-def "test-data")))
 
 (def test-data-map

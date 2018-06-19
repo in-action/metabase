@@ -1,7 +1,6 @@
 import { createSelector } from "reselect";
 import { assoc, getIn } from "icepick";
-
-import Dashboards from "metabase/entities/dashboards";
+import { getDashboardListing } from "../dashboards/selectors";
 
 import Query, { AggregationClause } from "metabase/lib/query";
 import { resourceListToMap } from "metabase/lib/redux";
@@ -108,7 +107,7 @@ export const getFieldBySegment = createSelector(
 );
 
 const getQuestions = (state, props) =>
-  getIn(state, ["entities", "questions"]) || {};
+  getIn(state, ["questions", "entities", "cards"]) || {};
 
 export const getMetricQuestions = createSelector(
   [getMetricId, getQuestions],
@@ -126,7 +125,7 @@ export const getMetricQuestions = createSelector(
       .reduce((map, question) => assoc(map, question.id, question), {}),
 );
 
-const getRevisions = (state, props) => state.revisions;
+const getRevisions = (state, props) => state.metadata.revisions;
 
 export const getMetricRevisions = createSelector(
   [getMetricId, getRevisions],
@@ -205,10 +204,8 @@ export const getIsFormulaExpanded = (state, props) =>
 
 export const getGuide = (state, props) => state.reference.guide;
 
-export const getDashboards = (state, props) => {
-  const list = Dashboards.selectors.getList(state);
-  return list && resourceListToMap(list);
-};
+export const getDashboards = (state, props) =>
+  getDashboardListing(state) && resourceListToMap(getDashboardListing(state));
 
 export const getIsDashboardModalOpen = (state, props) =>
   state.reference.isDashboardModalOpen;

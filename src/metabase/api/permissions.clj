@@ -22,17 +22,11 @@
 
 (defn- ->int [id] (Integer/parseInt (name id)))
 
-(defn- dejsonify-table-perms [table-perms]
-  (if-not (map? table-perms)
-    (keyword table-perms)
-    (into {} (for [[k v] table-perms]
-               [(keyword k) (keyword v)]))))
-
 (defn- dejsonify-tables [tables]
   (if (string? tables)
     (keyword tables)
     (into {} (for [[table-id perms] tables]
-               {(->int table-id) (dejsonify-table-perms perms)}))))
+               {(->int table-id) (keyword perms)}))))
 
 (defn- dejsonify-schemas [schemas]
   (if (string? schemas)

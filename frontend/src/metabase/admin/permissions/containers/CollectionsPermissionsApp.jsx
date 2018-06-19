@@ -3,10 +3,8 @@ import { connect } from "react-redux";
 
 import PermissionsEditor from "../components/PermissionsEditor.jsx";
 import PermissionsApp from "./PermissionsApp.jsx";
-import fitViewport from "metabase/hoc/FitViewPort";
 
 import { CollectionsApi } from "metabase/services";
-import Collections from "metabase/entities/collections";
 
 import {
   getCollectionsPermissionsGrid,
@@ -14,7 +12,11 @@ import {
   getSaveError,
   getDiff,
 } from "../selectors";
-import { updatePermission, savePermissions } from "../permissions";
+import {
+  updatePermission,
+  savePermissions,
+  loadCollections,
+} from "../permissions";
 import { goBack, push } from "react-router-redux";
 
 const mapStateToProps = (state, props) => {
@@ -34,10 +36,7 @@ const mapDispatchToProps = {
 
 const Editor = connect(mapStateToProps, mapDispatchToProps)(PermissionsEditor);
 
-@connect(null, {
-  loadCollections: Collections.actions.fetchList,
-})
-@fitViewport
+@connect(null, { loadCollections })
 export default class CollectionsPermissionsApp extends Component {
   componentWillMount() {
     this.props.loadCollections();
@@ -48,14 +47,8 @@ export default class CollectionsPermissionsApp extends Component {
         {...this.props}
         load={CollectionsApi.graph}
         save={CollectionsApi.updateGraph}
-        fitClassNames={this.props.fitClassNames}
       >
-        <Editor
-          {...this.props}
-          collectionId={this.props.location.query.collectionId}
-          admin={false}
-          confirmCancel={false}
-        />
+        <Editor {...this.props} modal confirmCancel={false} />
       </PermissionsApp>
     );
   }

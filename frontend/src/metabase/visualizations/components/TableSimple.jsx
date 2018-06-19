@@ -90,10 +90,8 @@ export default class TableSimple extends Component {
       onVisualizationClick,
       visualizationIsClickable,
       isPivoted,
-      settings,
     } = this.props;
     const { rows, cols } = data;
-    const getCellBackgroundColor = settings["table._cell_background_getter"];
 
     const { page, pageSize, sortColumn, sortDescending } = this.state;
 
@@ -171,16 +169,7 @@ export default class TableSimple extends Component {
                       return (
                         <td
                           key={columnIndex}
-                          style={{
-                            whiteSpace: "nowrap",
-                            backgroundColor:
-                              getCellBackgroundColor &&
-                              getCellBackgroundColor(
-                                cell,
-                                rowIndex,
-                                cols[columnIndex].name,
-                              ),
-                          }}
+                          style={{ whiteSpace: "nowrap" }}
                           className={cx("px1 border-bottom", {
                             "text-right": isColumnRightAligned(
                               cols[columnIndex],
@@ -207,7 +196,6 @@ export default class TableSimple extends Component {
                               : formatValue(cell, {
                                   column: cols[columnIndex],
                                   jsx: true,
-                                  rich: true,
                                 })}
                           </span>
                         </td>

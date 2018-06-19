@@ -1,36 +1,13 @@
 import React, { Component } from "react";
 import { t } from "c-3po";
+import Button from "metabase/components/Button.jsx";
 import ModalContent from "metabase/components/ModalContent.jsx";
 import Icon from "metabase/components/Icon.jsx";
 import HeaderWithBack from "metabase/components/HeaderWithBack";
-import QuestionIcon from "metabase/components/QuestionIcon";
 
-import CollectionListLoader from "metabase/containers/CollectionListLoader";
-import QuestionListLoader from "metabase/containers/QuestionListLoader";
-
+import Collections from "./CollectionList";
+import EntityList from "./EntityList";
 import ExpandingSearchField from "../components/ExpandingSearchField.jsx";
-
-const QuestionRow = ({ question, onClick }) => (
-  <div className="py2 border-top border-grey-1">
-    <div className="flex flex-full align-center">
-      <QuestionIcon
-        question={question}
-        className="text-light-blue mr2"
-        size={20}
-      />
-      <div onClick={onClick}>
-        <div className="h3 mb1 text-slate text-brand-hover cursor-pointer">
-          {question.name}
-        </div>
-        {question.description ? (
-          <div className="text-slate">{question.description}</div>
-        ) : (
-          <div className="text-light-blue">{`No description yet`}</div>
-        )}
-      </div>
-    </div>
-  </div>
-);
 
 export default class AddToDashboard extends Component {
   state = {
@@ -40,27 +17,25 @@ export default class AddToDashboard extends Component {
 
   renderQuestionList = () => {
     return (
-      <QuestionListLoader entityQuery={this.state.query}>
-        {({ questions }) => (
-          <div>
-            {questions.map(question => (
-              <QuestionRow
-                question={question}
-                onClick={() => this.props.onAdd(question)}
-              />
-            ))}
-          </div>
-        )}
-      </QuestionListLoader>
+      <EntityList
+        entityType="cards"
+        entityQuery={this.state.query}
+        editable={false}
+        showSearchWidget={false}
+        onEntityClick={this.props.onAdd}
+      />
     );
   };
 
   renderCollections = () => {
     return (
-      <CollectionListLoader>
-        {({ collections }) => (
+      <Collections>
+        {collections => (
           <div>
-            {/* only show the collections list if there are actually collections fixes #4668 */
+            {/*
+                            only show the collections list if there are actually collections
+                            fixes #4668
+                        */
             collections.length > 0 ? (
               <ol>
                 {collections.map((collection, index) => (
@@ -102,7 +77,7 @@ export default class AddToDashboard extends Component {
             )}
           </div>
         )}
-      </CollectionListLoader>
+      </Collections>
     );
   };
 
@@ -134,6 +109,13 @@ export default class AddToDashboard extends Component {
                     this.setState({ collection: null, query: null })
                   }
                 />
+              )}
+              {query && (
+                <div className="ml-auto flex align-center pr2">
+                  <h5>Sort by</h5>
+                  <Button borderless>{t`Last modified`}</Button>
+                  <Button borderless>{t`Alphabetical order`}</Button>
+                </div>
               )}
             </div>
           </div>

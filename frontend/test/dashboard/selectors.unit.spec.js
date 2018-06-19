@@ -23,7 +23,7 @@ const STATE = {
       },
     },
   },
-  entities: {
+  metadata: {
     databases: {},
     tables: {},
     fields: {

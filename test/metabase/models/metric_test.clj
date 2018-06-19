@@ -15,7 +15,7 @@
    :show_in_getting_started false
    :caveats                 nil
    :points_of_interest      nil
-   :archived                false
+   :is_active               true
    :definition              {}})
 
 (defn- user-details
@@ -91,7 +91,7 @@
                   Table    [{table-id-2 :id}    {:db_id database-id}]
                   Metric   [{segement-id-1 :id} {:table_id table-id-1, :name "Metric 1", :description nil}]
                   Metric   [{metric-id-2 :id}   {:table_id table-id-2}]
-                  Metric   [{metric-id3 :id}    {:table_id table-id-1, :archived true}]]
+                  Metric   [{metric-id3 :id}    {:table_id table-id-1, :is_active false}]]
     (doall (for [metric (u/prog1 (retrieve-metrics table-id-1)
                                  (assert (= 1 (count <>))))]
              (update (dissoc (into {} metric) :id :table_id :created_at :updated_at)
@@ -135,7 +135,7 @@
           :creator     (user-details :rasta)
           :name        "Toucans in the rainforest"
           :description "Lookin' for a blueberry"
-          :archived    true})
+          :is_active   false})
   (tt/with-temp* [Database [{database-id :id}]
                   Table    [{table-id :id}  {:db_id database-id}]
                   Metric   [{metric-id :id} {:table_id table-id}]]

@@ -1,31 +1,28 @@
 (ns metabase.models.field-values
   (:require [clojure.tools.logging :as log]
             [metabase.util :as u]
-            [metabase.util.schema :as su]
-            [puppetlabs.i18n.core :refer [trs]]
-            [schema.core :as s]
             [toucan
              [db :as db]
              [models :as models]]))
 
-(def ^Integer category-cardinality-threshold
+(def ^:const ^Integer category-cardinality-threshold
   "Fields with less than this many distinct values should automatically be given a special type of `:type/Category`.
   This no longer has any meaning whatsoever as far as the backend code is concerned; it is used purely to inform
   frontend behavior such as widget choices."
   (int 30))
 
-(def ^Integer auto-list-cardinality-threshold
-  "Fields with less than this many distincy values should be given a `has_field_values` value of `list`, which means
-  the Field should have FieldValues."
+(def ^:const ^Integer list-cardinality-threshold
+  "Fields with less than this many distincy values should be given a `has_field_values` value of `list`, which means the
+  Field should have FieldValues."
   (int 100))
 
-(def ^:private ^Integer entry-max-length
+(def ^:private ^:const ^Integer entry-max-length
   "The maximum character length for a stored `FieldValues` entry."
   (int 100))
 
-(def ^:private ^Integer total-max-length
+(def ^:private ^:const ^Integer total-max-length
   "Maximum total length for a `FieldValues` entry (combined length of all values for the field)."
-  (int (* auto-list-cardinality-threshold entry-max-length)))
+  (int (* list-cardinality-threshold entry-max-length)))
 
 
 ;; ## Entity + DB Multimethods
@@ -42,18 +39,16 @@
 
 ;; ## `FieldValues` Helper Functions
 
-(s/defn field-should-have-field-values? :- s/Bool
-  "Should this `field` be backed by a corresponding `FieldValues` object?"
+(defn field-should-have-field-values?
+  "Should this `Field` be backed by a corresponding `FieldValues` object?"
   {:arglists '([field])}
-  [{base-type :base_type, visibility-type :visibility_type, has-field-values :has_field_values, :as field}
-   :- {:visibility_type  su/KeywordOrString
-       :base_type        (s/maybe su/KeywordOrString)
-       :has_field_values (s/maybe su/KeywordOrString)
-       s/Keyword         s/Any}]
-  (boolean
-   (and (not (contains? #{:retired :sensitive :hidden :details-only} (keyword visibility-type)))
-        (not (isa? (keyword base-type) :type/DateTime))
-        (#{:list :auto-list} (keyword has-field-values)))))
+  [{base-type :base_type, visibility-type :visibility_type, has-field-values :has_field_values, :as field}]
+  {:pre [visibility-type
+         (contains? field :base_type)
+         (contains? field :has_field_values)]}
+  (and (not (contains? #{:retired :sensitive :hidden :details-only} (keyword visibility-type)))
+       (not (isa? (keyword base-type) :type/DateTime))
+       (= has-field-values "list")))
 
 
 (defn- values-less-than-total-max-length?
@@ -68,19 +63,32 @@
                    "FieldValues are allowed for this Field."
                    "FieldValues are NOT allowed for this Field.")))))
 
+(defn- cardinality-less-than-threshold?
+  "`true` if the number of DISTINCT-VALUES is less that `list-cardinality-threshold`.
+   Does some logging as well."
+  [distinct-values]
+  (let [num-values (count distinct-values)]
+    (u/prog1 (<= num-values list-cardinality-threshold)
+      (log/debug (if <>
+                   (format "Field has %d distinct values (max %d). FieldValues are allowed for this Field."
+                           num-values list-cardinality-threshold)
+                   (format "Field has over %d values. FieldValues are NOT allowed for this Field."
+                           list-cardinality-threshold))))))
+
 
 (defn- distinct-values
-  "Fetch a sequence of distinct values for `field` that are below the `total-max-length` threshold. If the values are
-  past the threshold, this returns `nil`."
+  "Fetch a sequence of distinct values for FIELD that are below the `total-max-length` threshold. If the values are past
+  the threshold, this returns `nil`."
   [field]
   (require 'metabase.db.metadata-queries)
   (let [values ((resolve 'metabase.db.metadata-queries/field-distinct-values) field)]
-    (when (values-less-than-total-max-length? values)
-      values)))
+    (when (cardinality-less-than-threshold? values)
+      (when (values-less-than-total-max-length? values)
+        values))))
 
 (defn- fixup-human-readable-values
   "Field values and human readable values are lists that are zipped together. If the field values have changes, the
-  human readable values will need to change too. This function reconstructs the `human_readable_values` to reflect
+  human readable values will need to change too. This function reconstructs the human_readable_values to reflect
   `NEW-VALUES`. If a new field value is found, a string version of that is used"
   [{old-values :values, old-hrv :human_readable_values} new-values]
   (when (seq old-hrv)
@@ -88,53 +96,31 @@
       (map #(get orig-remappings % (str %)) new-values))))
 
 (defn create-or-update-field-values!
-  "Create or update the FieldValues object for 'field`. If the FieldValues object already exists, then update values for
-   it; otherwise create a new FieldValues object with the newly fetched values. Returns whether the field values were
-   created/updated/deleted as a result of this call."
+  "Create or update the FieldValues object for FIELD. If the FieldValues object already exists, then update values for
+   it; otherwise create a new FieldValues object with the newly fetched values."
   [field & [human-readable-values]]
   (let [field-values (FieldValues :field_id (u/get-id field))
         values       (distinct-values field)
         field-name   (or (:name field) (:id field))]
     (cond
-      ;; If this Field is marked `auto-list`, and the number of values in now over the list threshold, we need to
-      ;; unmark it as `auto-list`. Switch it to `has_field_values` = `nil` and delete the FieldValues; this will
-      ;; result in it getting a Search Widget in the UI when `has_field_values` is automatically inferred by the
-      ;; `metabase.models.field/infer-has-field-values` hydration function (see that namespace for more detailed
-      ;; discussion)
-      ;;
-      ;; It would be nicer if we could do this in analysis where it gets marked `:auto-list` in the first place, but
-      ;; Fingerprints don't get updated regularly enough that we could detect the sudden increase in cardinality in a
-      ;; way that could make this work. Thus, we are stuck doing it here :(
-      (and (> (count values) auto-list-cardinality-threshold)
-           (= :auto-list (keyword (:has_field_values field))))
-      (do
-        (log/info (trs "Field {0} was previously automatically set to show a list widget, but now has {1} values."
-                       field-name (count values))
-                  (trs "Switching Field to use a search widget instead."))
-        (db/update! 'Field (u/get-id field) :has_field_values nil)
-        (db/delete! FieldValues :field_id (u/get-id field)))
       ;; if the FieldValues object already exists then update values in it
       (and field-values values)
       (do
-        (log/debug (trs "Storing updated FieldValues for Field {0}..." field-name))
+        (log/debug (format "Storing updated FieldValues for Field %s..." field-name))
         (db/update-non-nil-keys! FieldValues (u/get-id field-values)
           :values                values
-          :human_readable_values (fixup-human-readable-values field-values values))
-        ::fv-updated)
+          :human_readable_values (fixup-human-readable-values field-values values)))
       ;; if FieldValues object doesn't exist create one
       values
       (do
-        (log/debug (trs "Storing FieldValues for Field {0}..." field-name))
+        (log/debug (format "Storing FieldValues for Field %s..." field-name))
         (db/insert! FieldValues
           :field_id              (u/get-id field)
           :values                values
-          :human_readable_values human-readable-values)
-        ::fv-created)
+          :human_readable_values human-readable-values))
       ;; otherwise this Field isn't eligible, so delete any FieldValues that might exist
       :else
-      (do
-        (db/delete! FieldValues :field_id (u/get-id field))
-        ::fv-deleted))))
+      (db/delete! FieldValues :field_id (u/get-id field)))))
 
 
 (defn field-values->pairs
@@ -153,8 +139,7 @@
   {:pre [(integer? field-id)]}
   (when (field-should-have-field-values? field)
     (or (FieldValues :field_id field-id)
-        (when (contains? #{::fv-created ::fv-updated} (create-or-update-field-values! field human-readable-values))
-          (FieldValues :field_id field-id)))))
+        (create-or-update-field-values! field human-readable-values))))
 
 (defn save-field-values!
   "Save the `FieldValues` for FIELD-ID, creating them if needed, otherwise updating them."

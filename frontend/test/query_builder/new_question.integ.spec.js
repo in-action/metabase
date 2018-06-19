@@ -7,8 +7,6 @@ import {
   forBothAdminsAndNormalUsers,
   withApiMocks,
   BROWSER_HISTORY_REPLACE,
-  cleanup,
-  eventually,
 } from "__support__/integrated_tests";
 
 import EntitySearch, {
@@ -29,6 +27,7 @@ import DataSelector from "metabase/query_builder/components/DataSelector";
 import { FETCH_DATABASES } from "metabase/redux/metadata";
 import NativeQuery from "metabase-lib/lib/queries/NativeQuery";
 
+import { delay } from "metabase/lib/promise";
 import * as Urls from "metabase/lib/urls";
 
 import {
@@ -39,9 +38,8 @@ import {
   QUERY_COMPLETED,
 } from "metabase/query_builder/actions";
 
-import Metrics from "metabase/entities/metrics";
-import Segments from "metabase/entities/segments";
-import Databases from "metabase/entities/databases";
+import { MetabaseApi, MetricApi, SegmentApi } from "metabase/services";
+import { SET_REQUEST_STATE } from "metabase/redux/requests";
 
 import StructuredQuery from "metabase-lib/lib/queries/StructuredQuery";
 
@@ -52,6 +50,9 @@ import NoDatabasesEmptyState from "metabase/reference/databases/NoDatabasesEmpty
 describe("new question flow", async () => {
   // test an instance with segments, metrics, etc as an admin
   describe("a rich instance", async () => {
+    let metricId = null;
+    let segmentId = null;
+
     beforeAll(async () => {
       // TODO: Move these test metric/segment definitions to a central place
       const metricDef = {
@@ -71,11 +72,21 @@ describe("new question flow", async () => {
 
       // Needed for question creation flow
       useSharedAdminLogin();
-      cleanup.metric(await Metrics.api.create(metricDef));
-      cleanup.segment(await Segments.api.create(segmentDef));
+      metricId = (await MetricApi.create(metricDef)).id;
+      segmentId = (await SegmentApi.create(segmentDef)).id;
     });
 
-    afterAll(cleanup);
+    afterAll(async () => {
+      useSharedAdminLogin();
+      await MetricApi.delete({
+        metricId,
+        revision_message: "The lifetime of this metric was just a few seconds",
+      });
+      await SegmentApi.delete({
+        segmentId,
+        revision_message: "Sadly this segment didn't enjoy a long life either",
+      });
+    });
 
     it("redirects /question to /question/new", async () => {
       useSharedNormalLogin();
@@ -86,8 +97,8 @@ describe("new question flow", async () => {
       expect(store.getPath()).toBe("/question/new");
     });
 
-    forBothAdminsAndNormalUsers(() => {
-      it("renders all options for both admins and normal users if metrics & segments exist", async () => {
+    it("renders all options for both admins and normal users if metrics & segments exist", async () => {
+      await forBothAdminsAndNormalUsers(async () => {
         const store = await createTestStore();
 
         store.pushPath(Urls.newQuestion());
@@ -101,7 +112,7 @@ describe("new question flow", async () => {
     it("does not show Metrics option for normal users if there are no metrics", async () => {
       useSharedNormalLogin();
 
-      await withApiMocks([[Metrics.api, "list", () => []]], async () => {
+      await withApiMocks([[MetricApi, "list", () => []]], async () => {
         const store = await createTestStore();
 
         store.pushPath(Urls.newQuestion());
@@ -124,18 +135,15 @@ describe("new question flow", async () => {
         ...db,
         native_permissions: "read",
       });
-      const realDbList = Databases.api.list;
+      const realDbListWithTables = MetabaseApi.db_list_with_tables;
 
       await withApiMocks(
         [
           [
-            Databases.api,
-            "list",
+            MetabaseApi,
+            "db_list_with_tables",
             async () =>
-              (await realDbList({
-                include_tables: true,
-                include_cards: true,
-              })).map(disableWritePermissionsForDb),
+              (await realDbListWithTables()).map(disableWritePermissionsForDb),
           ],
         ],
         async () => {
@@ -157,19 +165,16 @@ describe("new question flow", async () => {
         ...db,
         native_permissions: "read",
       });
-      const realDbList = Databases.api.list;
+      const realDbListWithTables = MetabaseApi.db_list_with_tables;
 
       await withApiMocks(
         [
-          [Metrics.api, "list", () => []],
+          [MetricApi, "list", () => []],
           [
-            Databases.api,
-            "list",
+            MetabaseApi,
+            "db_list_with_tables",
             async () =>
-              (await realDbList({
-                include_tables: true,
-                include_cards: true,
-              })).map(disableWritePermissionsForDb),
+              (await realDbListWithTables()).map(disableWritePermissionsForDb),
           ],
         ],
         async () => {
@@ -181,18 +186,21 @@ describe("new question flow", async () => {
       );
     });
 
-    forBothAdminsAndNormalUsers(() => {
-      it("shows an empty state if there are no databases", async () => {
-        await withApiMocks([[Databases.api, "list", () => []]], async () => {
-          const store = await createTestStore();
+    it("shows an empty state if there are no databases", async () => {
+      await forBothAdminsAndNormalUsers(async () => {
+        await withApiMocks(
+          [[MetabaseApi, "db_list_with_tables", () => []]],
+          async () => {
+            const store = await createTestStore();
 
-          store.pushPath(Urls.newQuestion());
-          const app = mount(store.getAppContainer());
-          await store.waitForActions([DETERMINE_OPTIONS]);
+            store.pushPath(Urls.newQuestion());
+            const app = mount(store.getAppContainer());
+            await store.waitForActions([DETERMINE_OPTIONS]);
 
-          expect(app.find(NewQueryOption).length).toBe(0);
-          expect(app.find(NoDatabasesEmptyState).length).toBe(1);
-        });
+            expect(app.find(NewQueryOption).length).toBe(0);
+            expect(app.find(NoDatabasesEmptyState).length).toBe(1);
+          },
+        );
       });
     });
 
@@ -257,22 +265,12 @@ describe("new question flow", async () => {
           .filterWhere(c => c.prop("title") === "Metrics"),
       );
       await store.waitForActions(FETCH_DATABASES);
-      await eventually(() =>
-        expect(store.getPath()).toBe("/question/new/metric"),
-      );
-
-      await eventually(() => {
-        expect(
-          app
-            .find(EntitySearch)
-            .find(SearchGroupingOption)
-            .last()
-            .text(),
-        ).toBe("Creator");
-      });
+      await store.waitForActions([SET_REQUEST_STATE]);
+      expect(store.getPath()).toBe("/question/new/metric");
 
       const entitySearch = app.find(EntitySearch);
       const viewByCreator = entitySearch.find(SearchGroupingOption).last();
+      expect(viewByCreator.text()).toBe("Creator");
       click(viewByCreator);
       expect(store.getPath()).toBe("/question/new/metric?grouping=creator");
 
@@ -285,14 +283,14 @@ describe("new question flow", async () => {
       click(metricSearchResult.childAt(0));
 
       await store.waitForActions([INITIALIZE_QB, QUERY_COMPLETED]);
-      await eventually(() =>
-        expect(
-          app
-            .find(AggregationWidget)
-            .find(".View-section-aggregation")
-            .text(),
-        ).toBe("A Metric"),
-      );
+      await delay(100); // Trying to address random CI failures with a small delay
+
+      expect(
+        app
+          .find(AggregationWidget)
+          .find(".View-section-aggregation")
+          .text(),
+      ).toBe("A Metric");
     });
   });
 

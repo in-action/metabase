@@ -1,9 +1,8 @@
 import React from "react";
-import { t, ngettext, msgid } from "c-3po";
 
 import Icon from "metabase/components/Icon";
 
-import { stripId } from "metabase/lib/formatting";
+import { stripId, inflect } from "metabase/lib/formatting";
 import Query_DEPRECATED from "metabase/lib/query";
 import { mbqlEq } from "metabase/lib/query/util";
 import _ from "underscore";
@@ -493,14 +492,13 @@ export class BinnedDimension extends FieldDimension {
 
   subTriggerDisplayName(): string {
     if (this._args[0] === "num-bins") {
-      const n = this._args[1];
-      return ngettext(msgid`${n} bin`, `${n} bins`, n);
+      return `${this._args[1]} ${inflect("bins", this._args[1])}`;
     } else if (this._args[0] === "bin-width") {
       const binWidth = this._args[1];
       const units = this.field().isCoordinate() ? "°" : "";
       return `${binWidth}${units}`;
     } else {
-      return t`Auto binned`;
+      return "Auto binned";
     }
   }
 

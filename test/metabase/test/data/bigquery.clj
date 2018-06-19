@@ -11,7 +11,6 @@
              [datasets :as datasets]
              [interface :as i]]
             [metabase.util :as u]
-            [metabase.util.date :as du]
             [metabase.util.schema :as su]
             [schema.core :as s])
   (:import com.google.api.client.util.DateTime
@@ -95,7 +94,7 @@
   "Convert the HoneySQL form we normally use to wrap a `Timestamp` to a Google `DateTime`."
   [{[{s :literal}] :args}]
   {:pre [(string? s) (seq s)]}
-  (DateTime. (du/->Timestamp (str/replace s #"'" ""))))
+  (DateTime. (u/->Timestamp (str/replace s #"'" ""))))
 
 
 (defn- insert-data! [^String dataset-id, ^String table-id, row-maps]
@@ -130,17 +129,16 @@
 
 
 (def ^:private ^:const base-type->bigquery-type
-  {:type/BigInteger     :INTEGER
-   :type/Boolean        :BOOLEAN
-   :type/Date           :TIMESTAMP
-   :type/DateTime       :TIMESTAMP
-   :type/DateTimeWithTZ :TIMESTAMP
-   :type/Decimal        :FLOAT
-   :type/Dictionary     :RECORD
-   :type/Float          :FLOAT
-   :type/Integer        :INTEGER
-   :type/Text           :STRING
-   :type/Time           :TIME})
+  {:type/BigInteger :INTEGER
+   :type/Boolean    :BOOLEAN
+   :type/Date       :TIMESTAMP
+   :type/DateTime   :TIMESTAMP
+   :type/Decimal    :FLOAT
+   :type/Dictionary :RECORD
+   :type/Float      :FLOAT
+   :type/Integer    :INTEGER
+   :type/Text       :STRING
+   :type/Time       :TIME})
 
 (defn- fielddefs->field-name->base-type
   "Convert FIELD-DEFINITIONS to a format appropriate for passing to `create-table!`."
@@ -201,7 +199,7 @@
 
 (defn- create-db! [{:keys [database-name table-definitions]}]
   {:pre [(seq database-name) (sequential? table-definitions)]}
-    ;; fetch existing datasets if we haven't done so yet
+  ;; fetch existing datasets if we haven't done so yet
   (when-not (seq @existing-datasets)
     (reset! existing-datasets (set (existing-dataset-names)))
     (println "These BigQuery datasets have already been loaded:\n" (u/pprint-to-str (sort @existing-datasets))))

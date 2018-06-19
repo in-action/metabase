@@ -13,10 +13,8 @@ import Modal from "metabase/components/Modal.jsx";
 import FixedHeaderGrid from "./FixedHeaderGrid.jsx";
 import { AutoSizer } from "react-virtualized";
 
-import { isAdminGroup } from "metabase/lib/groups";
 import { capitalize, pluralize } from "metabase/lib/formatting";
 import cx from "classnames";
-import _ from "underscore";
 
 const LIGHT_BORDER = "rgb(225, 226, 227)";
 const DARK_BORDER = "rgb(161, 163, 169)";
@@ -39,7 +37,7 @@ const getBorderStyles = ({
   borderBottomLeftRadius: isFirstColumn && isLastRow ? BORDER_RADIUS : 0,
 });
 
-const DEFAULT_CELL_HEIGHT = 100;
+const CELL_HEIGHT = 100;
 const CELL_WIDTH = 246;
 const HEADER_HEIGHT = 65;
 const HEADER_WIDTH = 240;
@@ -50,43 +48,13 @@ const DEFAULT_OPTION = {
   bgColor: "#DFE8EA",
 };
 
-const PermissionsHeader = ({ permissions, isFirst, isLast }) => (
-  <div
-    className="flex"
-    style={getBorderStyles({
-      isFirstColumn: isFirst,
-      isLastColumn: isLast,
-      isFirstRow: true,
-      isLastRow: false,
-    })}
-  >
-    {permissions.map((permission, index) => (
-      <div
-        key={permission.id}
-        className="flex-full border-column-divider"
-        style={{
-          borderColor: LIGHT_BORDER,
-        }}
-      >
-        {permission.header && (
-          <h5 className="my1 text-centered text-grey-3 text-uppercase text-light">
-            {permission.header}
-          </h5>
-        )}
-      </div>
-    ))}
-  </div>
-);
-
-const GroupHeader = ({
+const GroupColumnHeader = ({
   group,
   permissions,
-  isColumn,
-  isRow,
-  isFirst,
-  isLast,
+  isLastColumn,
+  isFirstColumn,
 }) => (
-  <div>
+  <div className="absolute bottom left right">
     <h4 className="text-centered full my1 flex layout-centered">
       {group.name}
       {group.tooltip && (
@@ -95,59 +63,30 @@ const GroupHeader = ({
         </Tooltip>
       )}
     </h4>
-    {permissions && (
-      <PermissionsHeader
-        permissions={permissions}
-        isFirst={isFirst}
-        isLast={isLast}
-      />
-    )}
-  </div>
-);
-
-const EntityHeader = ({
-  entity,
-  icon,
-  permissions,
-  isRow,
-  isColumn,
-  isFirst,
-  isLast,
-}) => (
-  <div className="flex flex-column">
-    <div className={cx("relative flex", { "align-self-center mb1": isColumn })}>
-      <Icon name={icon} className="mr1" />
-      <div className="flex-full">
-        <h4>{entity.name}</h4>
-        {entity.subtitle && (
-          <div className="mt1 h5 text-monospace text-normal text-grey-2 text-uppercase">
-            {entity.subtitle}
-          </div>
-        )}
-        {entity.link && (
-          <div className="mt1">
-            <Link className="link" to={entity.link.url}>
-              {entity.link.name}
-            </Link>
-          </div>
-        )}
-      </div>
-    </div>
-
-    {permissions && (
-      <PermissionsHeader
-        permissions={permissions}
-        isFirst={isFirst}
-        isLast={isLast}
-      />
-    )}
-  </div>
-);
-
-const CornerHeader = ({ grid }) => (
-  <div className="absolute bottom left right flex flex-column align-center pb1">
-    <div className="flex align-center">
-      <h3 className="ml1">{capitalize(pluralize(grid.type))}</h3>
+    <div
+      className="flex"
+      style={getBorderStyles({
+        isLastColumn,
+        isFirstColumn,
+        isFirstRow: true,
+        isLastRow: false,
+      })}
+    >
+      {permissions.map((permission, index) => (
+        <div
+          key={permission.id}
+          className="flex-full border-column-divider"
+          style={{
+            borderColor: LIGHT_BORDER,
+          }}
+        >
+          {permission.header && (
+            <h5 className="my1 text-centered text-grey-3 text-uppercase text-light">
+              {permission.header}
+            </h5>
+          )}
+        </div>
+      ))}
     </div>
   </div>
 );
@@ -157,11 +96,9 @@ const PermissionsCell = ({
   permissions,
   entity,
   onUpdatePermission,
-  cellHeight,
-  isFirstRow,
   isLastRow,
-  isFirstColumn,
   isLastColumn,
+  isFirstColumn,
   isFaded,
 }) => (
   <div
@@ -170,7 +107,7 @@ const PermissionsCell = ({
       isLastRow,
       isLastColumn,
       isFirstColumn,
-      isFirstRow,
+      isFirstRow: false,
     })}
   >
     {permissions.map(permission => (
@@ -180,7 +117,6 @@ const PermissionsCell = ({
         group={group}
         entity={entity}
         onUpdatePermission={onUpdatePermission}
-        cellHeight={cellHeight}
         isEditable={group.editable}
         isFaded={isFaded}
       />
@@ -218,7 +154,6 @@ class GroupPermissionCell extends Component {
       entity,
       onUpdatePermission,
       isFaded,
-      cellHeight,
     } = this.props;
     const { confirmations } = this.state;
 
@@ -246,7 +181,7 @@ class GroupPermissionCell extends Component {
               })}
               style={{
                 borderColor: LIGHT_BORDER,
-                height: cellHeight - 1,
+                height: CELL_HEIGHT - 1,
                 backgroundColor: this.state.hovered
                   ? option.iconColor
                   : option.bgColor,
@@ -363,36 +298,50 @@ const AccessOptionList = ({ value, options, onChange }) => (
   </ul>
 );
 
+const EntityRowHeader = ({ entity, icon }) => (
+  <div
+    className="flex flex-column justify-center px1 pl4 ml2"
+    style={{
+      height: CELL_HEIGHT,
+    }}
+  >
+    <div className="relative flex align-center">
+      <Icon name={icon} className="absolute" style={{ left: -28 }} />
+      <h4>{entity.name}</h4>
+    </div>
+    {entity.subtitle && (
+      <span className="mt1 h5 text-monospace text-normal text-grey-2 text-uppercase">
+        {entity.subtitle}
+      </span>
+    )}
+    {entity.link && (
+      <Link className="mt1 link" to={entity.link.url}>
+        {entity.link.name}
+      </Link>
+    )}
+  </div>
+);
+
+const CornerHeader = ({ grid }) => (
+  <div className="absolute bottom left right flex flex-column align-center pb1">
+    <div className="flex align-center">
+      <h3 className="ml1">{capitalize(pluralize(grid.type))}</h3>
+    </div>
+  </div>
+);
+
+import _ from "underscore";
+
 const PermissionsGrid = ({
   className,
   grid,
   onUpdatePermission,
   entityId,
   groupId,
-  isPivoted = false,
-  showHeader = true,
-  cellHeight = DEFAULT_CELL_HEIGHT,
 }) => {
   const permissions = Object.entries(grid.permissions).map(
     ([id, permission]) => ({ id: id, ...permission }),
   );
-
-  let rowCount, columnCount, headerHeight;
-  if (isPivoted) {
-    rowCount = grid.groups.length;
-    columnCount = grid.entities.length;
-    headerHeight =
-      HEADER_HEIGHT +
-      Math.max(
-        ...grid.entities.map(
-          entity => (entity.subtitle ? 15 : 0) + (entity.link ? 15 : 0),
-        ),
-      );
-  } else {
-    rowCount = grid.entities.length;
-    columnCount = grid.groups.length;
-    headerHeight = HEADER_HEIGHT;
-  }
   return (
     <div className={className}>
       <AutoSizer>
@@ -400,88 +349,52 @@ const PermissionsGrid = ({
           <FixedHeaderGrid
             height={height}
             width={width}
-            rowCount={rowCount}
-            columnCount={columnCount}
+            rowCount={grid.entities.length}
+            columnCount={grid.groups.length}
             columnWidth={Math.max(
               CELL_WIDTH,
-              (width - 20 - HEADER_WIDTH) / columnCount,
+              (width - 20 - HEADER_WIDTH) / grid.groups.length,
             )}
-            rowHeight={cellHeight}
+            rowHeight={CELL_HEIGHT}
             paddingBottom={20}
             paddingRight={20}
-            columnHeaderHeight={showHeader ? headerHeight : 0}
+            columnHeaderHeight={HEADER_HEIGHT}
             rowHeaderWidth={HEADER_WIDTH}
-            renderCell={({ columnIndex, rowIndex }) => {
-              const group = grid.groups[isPivoted ? rowIndex : columnIndex];
-              const entity = grid.entities[isPivoted ? columnIndex : rowIndex];
-              return (
-                <PermissionsCell
-                  group={group}
-                  permissions={permissions}
-                  entity={entity}
-                  onUpdatePermission={onUpdatePermission}
-                  cellHeight={cellHeight}
-                  isFirstRow={showHeader ? false : rowIndex === 0}
-                  isLastRow={rowIndex === rowCount - 1}
-                  isFirstColumn={columnIndex === 0}
-                  isLastColumn={columnIndex === columnCount - 1}
-                  isFaded={
-                    isAdminGroup(group) ||
-                    (groupId != null && group.id !== groupId) ||
-                    (entityId != null && !_.isEqual(entityId, entity.id))
-                  }
-                />
-              );
-            }}
-            renderColumnHeader={
-              showHeader
-                ? ({ columnIndex }) => (
-                    <div className="absolute bottom left right">
-                      {isPivoted ? (
-                        <EntityHeader
-                          icon={grid.icon}
-                          entity={grid.entities[columnIndex]}
-                          permissions={permissions}
-                          isFirst={columnIndex === 0}
-                          isLast={columnIndex === columnCount - 1}
-                          isColumn
-                        />
-                      ) : (
-                        <GroupHeader
-                          group={grid.groups[columnIndex]}
-                          permissions={permissions}
-                          isFirst={columnIndex === 0}
-                          isLast={columnIndex === columnCount - 1}
-                          isColumn
-                        />
-                      )}
-                    </div>
-                  )
-                : undefined
-            }
-            renderRowHeader={({ rowIndex }) => (
-              <div className="spread flex align-center p2">
-                {isPivoted ? (
-                  <GroupHeader
-                    group={grid.groups[rowIndex]}
-                    isFirst={rowIndex === 0}
-                    isLast={rowIndex === rowCount - 1}
-                    isRow
-                  />
-                ) : (
-                  <EntityHeader
-                    icon={grid.icon}
-                    entity={grid.entities[rowIndex]}
-                    isFirst={rowIndex === 0}
-                    isLast={rowIndex === rowCount - 1}
-                    isRow
-                  />
-                )}
-              </div>
+            renderCell={({ columnIndex, rowIndex }) => (
+              <PermissionsCell
+                group={grid.groups[columnIndex]}
+                permissions={permissions}
+                entity={grid.entities[rowIndex]}
+                onUpdatePermission={onUpdatePermission}
+                isFirstRow={rowIndex === 0}
+                isLastRow={rowIndex === grid.entities.length - 1}
+                isFirstColumn={columnIndex === 0}
+                isLastColumn={columnIndex === grid.groups.length - 1}
+                isFaded={
+                  (groupId != null &&
+                    grid.groups[columnIndex].id !== groupId) ||
+                  (entityId != null &&
+                    !_.isEqual(entityId, grid.entities[rowIndex].id))
+                }
+              />
             )}
-            renderCorner={
-              showHeader ? () => <CornerHeader grid={grid} /> : undefined
-            }
+            renderColumnHeader={({ columnIndex }) => (
+              <GroupColumnHeader
+                group={grid.groups[columnIndex]}
+                permissions={permissions}
+                isFirstColumn={columnIndex === 0}
+                isLastColumn={columnIndex === grid.groups.length - 1}
+              />
+            )}
+            renderRowHeader={({ rowIndex }) => (
+              <EntityRowHeader
+                icon={grid.icon}
+                entity={grid.entities[rowIndex]}
+                isFirstRow={rowIndex === 0}
+                isLastRow={rowIndex === grid.entities.length - 1}
+              />
+            )}
+            renderCorner={() => <CornerHeader grid={grid} />}
           />
         )}
       </AutoSizer>

@@ -17,11 +17,14 @@ import {
   getIsEditing,
 } from "../selectors";
 
+import { getXrayEnabled } from "metabase/xray/selectors";
+
 const mapStateToProps = (state, props) => ({
   database: getDatabase(state, props),
   table: getTable(state, props),
   databaseId: getDatabaseId(state, props),
   isEditing: getIsEditing(state, props),
+  showXray: getXrayEnabled(state),
 });
 
 const mapDispatchToProps = {
@@ -38,6 +41,7 @@ export default class TableDetailContainer extends Component {
     databaseId: PropTypes.number.isRequired,
     table: PropTypes.object.isRequired,
     isEditing: PropTypes.bool,
+    showXray: PropTypes.bool,
   };
 
   async fetchContainerData() {
@@ -60,13 +64,15 @@ export default class TableDetailContainer extends Component {
   }
 
   render() {
-    const { database, table, isEditing } = this.props;
+    const { database, table, isEditing, showXray } = this.props;
 
     return (
       <SidebarLayout
         className="flex-full relative"
         style={isEditing ? { paddingTop: "43px" } : {}}
-        sidebar={<TableSidebar database={database} table={table} />}
+        sidebar={
+          <TableSidebar database={database} table={table} showXray={showXray} />
+        }
       >
         <TableDetail {...this.props} />
       </SidebarLayout>

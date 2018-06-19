@@ -17,8 +17,10 @@ import GuideDetailEditor from "metabase/reference/components/GuideDetailEditor.j
 import * as metadataActions from "metabase/redux/metadata";
 import * as actions from "metabase/reference/reference";
 import { clearRequestState } from "metabase/redux/requests";
-
-import Dashboards from "metabase/entities/dashboards";
+import {
+  createDashboard,
+  updateDashboard,
+} from "metabase/dashboards/dashboards";
 
 import { updateSetting } from "metabase/admin/settings/settings";
 
@@ -115,8 +117,8 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchToProps = {
-  updateDashboard: Dashboards.actions.update,
-  createDashboard: Dashboards.actions.create,
+  updateDashboard,
+  createDashboard,
   updateSetting,
   clearRequestState,
   ...metadataActions,
@@ -216,7 +218,7 @@ export default class GettingStartedGuideEditForm extends Component {
         {isDashboardModalOpen && (
           <Modal>
             <CreateDashboardModal
-              createDashboard={async newDashboard => {
+              createDashboardFn={async newDashboard => {
                 try {
                   await createDashboard(newDashboard, { redirect: true });
                 } catch (error) {

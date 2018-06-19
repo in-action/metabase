@@ -17,7 +17,7 @@ import {
   getIsEditing,
 } from "../selectors";
 
-import Questions from "metabase/entities/questions";
+import { loadEntities } from "metabase/questions/questions";
 
 const mapStateToProps = (state, props) => ({
   database: getDatabase(state, props),
@@ -27,7 +27,7 @@ const mapStateToProps = (state, props) => ({
 });
 
 const mapDispatchToProps = {
-  fetchQuestions: Questions.actions.fetchList,
+  fetchQuestions: () => loadEntities("cards", {}),
   ...metadataActions,
   ...actions,
 };

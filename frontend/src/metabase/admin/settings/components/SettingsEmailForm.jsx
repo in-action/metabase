@@ -7,24 +7,25 @@ import MetabaseAnalytics from "metabase/lib/analytics";
 import MetabaseUtils from "metabase/lib/utils";
 import SettingsSetting from "./SettingsSetting.jsx";
 
-import Button from "metabase/components/Button";
-
 export default class SettingsEmailForm extends Component {
-  state = {
-    dirty: false,
-    formData: {},
-    sendingEmail: "default",
-    submitting: "default",
-    valid: false,
-    validationErrors: {},
-  };
+  constructor(props, context) {
+    super(props, context);
+
+    this.state = {
+      dirty: false,
+      formData: {},
+      sendingEmail: "default",
+      submitting: "default",
+      valid: false,
+      validationErrors: {},
+    };
+  }
 
   static propTypes = {
     elements: PropTypes.array.isRequired,
     formErrors: PropTypes.object,
     sendTestEmail: PropTypes.func.isRequired,
     updateEmailSettings: PropTypes.func.isRequired,
-    clearEmailSettings: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -165,12 +166,6 @@ export default class SettingsEmailForm extends Component {
     );
   }
 
-  clear = () => {
-    this.props.clearEmailSettings().then(() => {
-      this.setState({ formData: {} });
-    });
-  };
-
   updateEmailSettings(e) {
     e.preventDefault();
 
@@ -257,42 +252,40 @@ export default class SettingsEmailForm extends Component {
       saveButtonText = saveSettingsButtonStates[submitting];
 
     return (
-      <ul>
-        {settings}
-        <li className="m2 mb4">
-          <Button
-            primary={!disabled}
-            className={cx({ "Button--success-new": submitting === "success" })}
-            disabled={disabled}
-            onClick={this.updateEmailSettings.bind(this)}
-          >
-            {saveButtonText}
-          </Button>
-          {valid && !dirty && submitting === "default" ? (
-            <Button
-              className={cx("ml1", {
-                "Button--success-new": sendingEmail === "success",
-              })}
+      <form noValidate>
+        <ul>
+          {settings}
+          <li className="m2 mb4">
+            <button
+              className={cx(
+                "Button mr2",
+                { "Button--primary": !disabled },
+                { "Button--success-new": submitting === "success" },
+              )}
               disabled={disabled}
-              onClick={this.sendTestEmail.bind(this)}
+              onClick={this.updateEmailSettings.bind(this)}
             >
-              {emailButtonText}
-            </Button>
-          ) : null}
-          <Button
-            className="ml1"
-            onClick={() => this.clear()}
-            disabled={disabled}
-          >
-            {t`Clear`}
-          </Button>
-          {formErrors && formErrors.message ? (
-            <span className="pl2 text-error text-bold">
-              {formErrors.message}
-            </span>
-          ) : null}
-        </li>
-      </ul>
+              {saveButtonText}
+            </button>
+            {valid && !dirty && submitting === "default" ? (
+              <button
+                className={cx("Button", {
+                  "Button--success-new": sendingEmail === "success",
+                })}
+                disabled={disabled}
+                onClick={this.sendTestEmail.bind(this)}
+              >
+                {emailButtonText}
+              </button>
+            ) : null}
+            {formErrors && formErrors.message ? (
+              <span className="pl2 text-error text-bold">
+                {formErrors.message}
+              </span>
+            ) : null}
+          </li>
+        </ul>
+      </form>
     );
   }
 }

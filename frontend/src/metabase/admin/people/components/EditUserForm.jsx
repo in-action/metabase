@@ -61,7 +61,7 @@ export default class EditUserForm extends Component {
     this.validateForm();
   };
 
-  async formSubmitted(e) {
+  formSubmitted(e) {
     e.preventDefault();
 
     this.setState({
@@ -85,27 +85,18 @@ export default class EditUserForm extends Component {
       return;
     }
 
-    try {
-      await this.props.submitFn({
-        ...(this.props.user || {}),
-        first_name: ReactDOM.findDOMNode(this.refs.firstName).value,
-        last_name: ReactDOM.findDOMNode(this.refs.lastName).value,
-        email: email,
-        groups:
-          this.props.groups && this.state.selectedGroups
-            ? Object.entries(this.state.selectedGroups)
-                .filter(([key, value]) => value)
-                .map(([key, value]) => parseInt(key, 10))
-            : null,
-      });
-    } catch (e) {
-      // HACK: sometimes errors don't follow our usual conventions
-      if (e && typeof e.data === "string") {
-        this.setState({ formError: { data: { message: e.data } } });
-      } else {
-        this.setState({ formError: e });
-      }
-    }
+    this.props.submitFn({
+      ...(this.props.user || {}),
+      first_name: ReactDOM.findDOMNode(this.refs.firstName).value,
+      last_name: ReactDOM.findDOMNode(this.refs.lastName).value,
+      email: email,
+      groups:
+        this.props.groups && this.state.selectedGroups
+          ? Object.entries(this.state.selectedGroups)
+              .filter(([key, value]) => value)
+              .map(([key, value]) => parseInt(key, 10))
+          : null,
+    });
   }
 
   cancel() {
@@ -127,7 +118,7 @@ export default class EditUserForm extends Component {
 
     return (
       <form onSubmit={this.formSubmitted.bind(this)} noValidate>
-        <div>
+        <div className="px4 pb2">
           <FormField fieldName="first_name" formError={formError}>
             <FormLabel
               title={t`First name`}
@@ -238,12 +229,7 @@ export default class EditUserForm extends Component {
           ) : null}
         </div>
 
-        <ModalFooter className="flex align-center p0">
-          {formError &&
-            formError.data &&
-            formError.data.message && (
-              <span className="text-error">{formError.data.message}</span>
-            )}
+        <ModalFooter>
           <Button type="button" onClick={this.cancel.bind(this)}>
             {t`Cancel`}
           </Button>

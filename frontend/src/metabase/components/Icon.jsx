@@ -2,15 +2,14 @@
 
 import React, { Component } from "react";
 import RetinaImage from "react-retina-image";
-import styled from "styled-components";
-import { color, space, hover } from "styled-system";
 import cx from "classnames";
 
 import { loadIcon } from "metabase/icon_paths";
 
 import Tooltipify from "metabase/hoc/Tooltipify";
 
-class BaseIcon extends Component {
+@Tooltipify
+export default class Icon extends Component {
   static props: {
     name: string,
     size?: string | number,
@@ -18,6 +17,7 @@ class BaseIcon extends Component {
     height?: string | number,
     scale?: string | number,
     tooltip?: string, // using Tooltipify
+    className?: string,
   };
 
   render() {
@@ -63,11 +63,3 @@ class BaseIcon extends Component {
     }
   }
 }
-
-const Icon = styled(BaseIcon)`
-  ${space}
-  ${color}
-  ${hover}
-  flex-shrink: 0
-`;
-export default Tooltipify(Icon);

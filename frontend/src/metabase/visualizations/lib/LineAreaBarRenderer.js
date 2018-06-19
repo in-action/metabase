@@ -579,12 +579,7 @@ type LineAreaBarProps = VisualizationProps & {
   maxSeries: number,
 };
 
-type DeregisterFunction = () => void;
-
-export default function lineAreaBar(
-  element: Element,
-  props: LineAreaBarProps,
-): DeregisterFunction {
+export default function lineAreaBar(element: Element, props: LineAreaBarProps) {
   const { onRender, chartType, isScalarSeries, settings } = props;
 
   const warnings = {};
@@ -595,17 +590,15 @@ export default function lineAreaBar(
   checkSeriesIsValid(props);
 
   // force histogram to be ordinal axis with zero-filled missing points
-  settings["graph.x_axis._scale_original"] = settings["graph.x_axis.scale"];
   if (isHistogram(settings)) {
     settings["line.missing"] = "zero";
     settings["graph.x_axis.scale"] = "ordinal";
   }
 
-  let datas = getDatas(props, warn);
-  let xAxisProps = getXAxisProps(props, datas);
+  const datas = getDatas(props, warn);
+  const xAxisProps = getXAxisProps(props, datas);
 
-  datas = fillMissingValuesInDatas(props, xAxisProps, datas);
-  xAxisProps = getXAxisProps(props, datas);
+  fillMissingValuesInDatas(props, xAxisProps, datas);
 
   if (isScalarSeries) xAxisProps.xValues = datas.map(data => data[0][0]); // TODO - what is this for?
 
@@ -623,7 +616,8 @@ export default function lineAreaBar(
   const parent = dc.compositeChart(element);
   initChart(parent, element);
 
-  parent.settings = settings;
+  // copy settings so we can mutate based on runtime conditions
+  parent.settings = { ...settings };
 
   const brushChangeFunctions = makeBrushChangeFunctions(props);
 
@@ -645,11 +639,8 @@ export default function lineAreaBar(
 
   parent.compose(charts);
 
-  if (groups.length > 1 && !props.isScalarSeries) {
-    doGroupedBarStuff(parent);
-  } else if (isHistogramBar(props)) {
-    doHistogramBarStuff(parent);
-  }
+  if (groups.length > 1 && !props.isScalarSeries) doGroupedBarStuff(parent);
+  else if (isHistogramBar(props)) doHistogramBarStuff(parent);
 
   // HACK: compositeChart + ordinal X axis shenanigans. See https://github.com/dc-js/dc.js/issues/678 and https://github.com/dc-js/dc.js/issues/662
   parent._rangeBandPadding(chartType === "bar" ? BAR_PADDING_RATIO : 1); //
@@ -682,10 +673,7 @@ export default function lineAreaBar(
       warnings: Object.keys(warnings),
     });
 
-  // return an unregister function
-  return () => {
-    dc.chartRegistry.deregister(parent);
-  };
+  return parent;
 }
 
 export const lineRenderer = (element, props) =>
