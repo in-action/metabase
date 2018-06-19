@@ -10,7 +10,7 @@
              [revision :refer [Revision]]
              [segment :refer [Segment]]
              [table :refer [Table]]]
-            [metabase.test.data :as data :refer :all]
+            [metabase.test.data :refer :all]
             [metabase.test.data.users :refer :all]
             [metabase.util :as u]
             [toucan.db :as db]
@@ -20,21 +20,20 @@
   "Some default properties for `Cards` for use in tests in this namespace."
   []
   {:display                "table"
-   :dataset_query          {:database (data/id)
+   :dataset_query          {:database (id)
                             :type     "query"
                             :query    {:aggregation ["rows"]
-                                       :source_table (data/id :categories)}}
+                                       :source_table (id :categories)}}
    :visualization_settings {}
    :creator_id             (user->id :crowberto)})
 
 (defn- card->revision-object [card]
   {:archived               false
    :collection_id          nil
-   :collection_position    nil
    :creator_id             (:creator_id card)
-   :database_id            (data/id)
+   :database_id            (id)
    :dataset_query          (:dataset_query card)
-   :read_permissions       nil
+   :read_permissions       (vec (:read_permissions card))
    :description            nil
    :display                "table"
    :enable_embedding       false
@@ -45,7 +44,7 @@
    :public_uuid            nil
    :cache_ttl              nil
    :query_type             "query"
-   :table_id               (data/id :categories)
+   :table_id               (id :categories)
    :visualization_settings {}
    :result_metadata        nil})
 
@@ -196,7 +195,7 @@
                   :show_in_getting_started false
                   :caveats                 nil
                   :points_of_interest      nil
-                  :archived                false
+                  :is_active               true
                   :creator_id              (user->id :rasta)
                   :definition              {:a "b"}}
    :is_reversion false
@@ -222,7 +221,7 @@
                   :show_in_getting_started false
                   :caveats                 nil
                   :points_of_interest      nil
-                  :archived                false
+                  :is_active               true
                   :creator_id              (user->id :rasta)
                   :definition              {:a "b"}}
    :is_reversion false
@@ -249,7 +248,7 @@
                   :show_in_getting_started false
                   :caveats                 nil
                   :points_of_interest      nil
-                  :archived                true
+                  :is_active               false
                   :creator_id              (user->id :rasta)
                   :definition              {:a "b"}}
    :is_reversion false
@@ -257,7 +256,7 @@
    :message      nil}
   (tt/with-temp* [Database [{database-id :id}]
                   Table    [{:keys [id]} {:db_id database-id}]
-                  Metric   [metric       {:table_id id, :definition {:a "b"}, :archived true}]]
+                  Metric   [metric       {:table_id id, :definition {:a "b"}, :is_active false}]]
     (process-revision-event! {:topic :metric-delete
                               :item  metric})
     (let [revision (db/select-one [Revision :model :user_id :object :is_reversion :is_creation :message], :model "Metric", :model_id (:id metric))]
@@ -273,7 +272,7 @@
                   :show_in_getting_started false
                   :caveats                 nil
                   :points_of_interest      nil
-                  :archived                false
+                  :is_active               true
                   :creator_id              (user->id :rasta)
                   :definition              {:a "b"}}
    :is_reversion false
@@ -298,7 +297,7 @@
                   :show_in_getting_started false
                   :caveats                 nil
                   :points_of_interest      nil
-                  :archived                false
+                  :is_active               true
                   :creator_id              (user->id :rasta)
                   :definition              {:a "b"}}
    :is_reversion false
@@ -324,7 +323,7 @@
                   :show_in_getting_started false
                   :caveats                 nil
                   :points_of_interest      nil
-                  :archived                true
+                  :is_active               false
                   :creator_id              (user->id :rasta)
                   :definition              {:a "b"}}
    :is_reversion false
@@ -334,7 +333,7 @@
                   Table    [{:keys [id]} {:db_id database-id}]
                   Segment  [segment      {:table_id   id
                                           :definition {:a "b"}
-                                          :archived   true}]]
+                                          :is_active  false}]]
     (process-revision-event! {:topic :segment-delete
                               :item  segment})
     (update (db/select-one [Revision :model :user_id :object :is_reversion :is_creation :message], :model "Segment", :model_id (:id segment))

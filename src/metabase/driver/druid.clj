@@ -7,7 +7,12 @@
              [driver :as driver]
              [util :as u]]
             [metabase.driver.druid.query-processor :as qp]
-            [metabase.util.ssh :as ssh]))
+            [metabase.models
+             [database :refer [Database]]
+             [field :as field]
+             [table :as table]]
+            [metabase.util.ssh :as ssh]
+            [toucan.db :as db]))
 
 ;;; ### Request helper fns
 
@@ -140,7 +145,6 @@
 ;;; ### DruidrDriver Class Definition
 
 (defrecord DruidDriver []
-  :load-ns true
   clojure.lang.Named
   (getName [_] "Druid"))
 

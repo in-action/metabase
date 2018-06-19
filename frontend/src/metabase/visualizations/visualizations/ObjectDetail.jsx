@@ -103,11 +103,7 @@ export class ObjectDetail extends Component {
         let formattedJson = JSON.stringify(value, null, 2);
         cellValue = <pre className="ObjectJSON">{formattedJson}</pre>;
       } else {
-        cellValue = formatValue(value, {
-          column: column,
-          jsx: true,
-          rich: true,
-        });
+        cellValue = formatValue(value, { column: column, jsx: true });
         if (typeof cellValue === "string") {
           cellValue = <ExpandableString str={cellValue} length={140} />;
         }

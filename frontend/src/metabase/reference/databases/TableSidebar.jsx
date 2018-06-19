@@ -9,7 +9,7 @@ import SidebarItem from "metabase/components/SidebarItem.jsx";
 import cx from "classnames";
 import pure from "recompose/pure";
 
-const TableSidebar = ({ database, table, style, className }) => (
+const TableSidebar = ({ database, table, style, className, showXray }) => (
   <div className={cx(S.sidebar, className)} style={style}>
     <div className={S.breadcrumbs}>
       <Breadcrumbs
@@ -48,8 +48,16 @@ const TableSidebar = ({ database, table, style, className }) => (
         key={`/auto/dashboard/table/${table.id}`}
         href={`/auto/dashboard/table/${table.id}`}
         icon="bolt"
-        name={t`X-ray this table`}
+        name={t`See an exploration of this table`}
       />
+      {showXray && (
+        <SidebarItem
+          key={`/xray/table/${table.id}/approximate`}
+          href={`/xray/table/${table.id}/approximate`}
+          icon="beaker"
+          name={t`X-ray this table`}
+        />
+      )}
     </ol>
   </div>
 );
@@ -59,6 +67,7 @@ TableSidebar.propTypes = {
   table: PropTypes.object,
   className: PropTypes.string,
   style: PropTypes.object,
+  showXray: PropTypes.bool,
 };
 
 export default pure(TableSidebar);

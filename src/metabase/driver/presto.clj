@@ -20,7 +20,6 @@
             [metabase.driver.generic-sql.util.unprepare :as unprepare]
             [metabase.query-processor.util :as qputil]
             [metabase.util
-             [date :as du]
              [honeysql-extensions :as hx]
              [ssh :as ssh]])
   (:import java.sql.Time
@@ -28,7 +27,6 @@
            [metabase.query_processor.interface TimeValue]))
 
 (defrecord PrestoDriver []
-  :load-ns true
   clojure.lang.Named
   (getName [_] "Presto"))
 
@@ -50,16 +48,16 @@
 
 (defn- parse-time-with-tz [s]
   ;; Try parsing with offset first then with full ZoneId
-  (or (u/ignore-exceptions (du/parse-date "HH:mm:ss.SSS ZZ" s))
-      (du/parse-date "HH:mm:ss.SSS ZZZ" s)))
+  (or (u/ignore-exceptions (u/parse-date "HH:mm:ss.SSS ZZ" s))
+      (u/parse-date "HH:mm:ss.SSS ZZZ" s)))
 
 (defn- parse-timestamp-with-tz [s]
   ;; Try parsing with offset first then with full ZoneId
-  (or (u/ignore-exceptions (du/parse-date "yyyy-MM-dd HH:mm:ss.SSS ZZ" s))
-      (du/parse-date "yyyy-MM-dd HH:mm:ss.SSS ZZZ" s)))
+  (or (u/ignore-exceptions (u/parse-date "yyyy-MM-dd HH:mm:ss.SSS ZZ" s))
+      (u/parse-date "yyyy-MM-dd HH:mm:ss.SSS ZZZ" s)))
 
 (def ^:private presto-date-time-formatter
-  (du/->DateTimeFormatter "yyyy-MM-dd HH:mm:ss.SSS"))
+  (u/->DateTimeFormatter "yyyy-MM-dd HH:mm:ss.SSS"))
 
 (defn- parse-presto-time
   "Parsing time from presto using a specific formatter rather than the
@@ -67,7 +65,7 @@
   performance is important"
   [time-str]
   (->> time-str
-       (du/parse-date :hour-minute-second-ms)
+       (u/parse-date :hour-minute-second-ms)
        tcoerce/to-long
        Time.))
 
@@ -76,7 +74,7 @@
     #"decimal.*"                bigdec
     #"time"                     parse-presto-time
     #"time with time zone"      parse-time-with-tz
-    #"timestamp"                (partial du/parse-date
+    #"timestamp"                (partial u/parse-date
                                          (if-let [report-tz (and report-timezone
                                                                  (time/time-zone-for-id report-timezone))]
                                            (tformat/with-zone presto-date-time-formatter report-tz)
@@ -217,7 +215,7 @@
 
 (defmethod sqlqp/->honeysql [PrestoDriver Date]
   [_ date]
-  (hsql/call :from_iso8601_timestamp (hx/literal (du/date->iso-8601 date))))
+  (hsql/call :from_iso8601_timestamp (hx/literal (u/date->iso-8601 date))))
 
 (def ^:private time-format (tformat/formatter "HH:mm:SS.SSS"))
 

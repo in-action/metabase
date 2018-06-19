@@ -27,9 +27,10 @@ export default class LoadingAndErrorWrapper extends Component {
   };
 
   static defaultProps = {
+    className: "flex flex-full",
     error: false,
     loading: false,
-    noBackground: true,
+    noBackground: false,
     noWrapper: false,
     showSpinner: true,
     loadingMessages: [t`Loading...`],
@@ -38,16 +39,13 @@ export default class LoadingAndErrorWrapper extends Component {
 
   getErrorMessage() {
     const { error } = this.props;
-    let errorMessage =
+    return (
       // NOTE Atte Keinänen 5/10/17 Dashboard API endpoint returns the error as JSON with `message` field
       (error.data && (error.data.message ? error.data.message : error.data)) ||
       error.statusText ||
-      error.message;
-
-    if (!errorMessage || typeof errorMessage === "object") {
-      errorMessage = t`An error occured`;
-    }
-    return errorMessage;
+      error.message ||
+      t`An error occured`
+    );
   }
 
   componentDidMount() {

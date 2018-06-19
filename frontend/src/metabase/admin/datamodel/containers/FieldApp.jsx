@@ -38,7 +38,11 @@ import { DatetimeFieldDimension } from "metabase-lib/lib/Dimension";
 
 import { rescanFieldValues, discardFieldValues } from "../field";
 
-import { has_field_values_options } from "metabase/lib/core";
+const HAS_FIELD_VALUES_OPTIONS = [
+  { name: t`Search box`, value: "search" },
+  { name: t`A list of all values`, value: "list" },
+  { name: t`Plain input box`, value: "none" },
+];
 
 const SelectClasses =
   "h3 bordered border-dark shadowed p2 inline-block flex align-center rounded text-bold";
@@ -227,7 +231,7 @@ export default class FieldApp extends Component {
                 />
                 <Select
                   triggerClasses={SelectClasses}
-                  value={_.findWhere(has_field_values_options, {
+                  value={_.findWhere(HAS_FIELD_VALUES_OPTIONS, {
                     value: field.has_field_values,
                   })}
                   onChange={option =>
@@ -235,7 +239,7 @@ export default class FieldApp extends Component {
                       has_field_values: option.value,
                     })
                   }
-                  options={has_field_values_options}
+                  options={HAS_FIELD_VALUES_OPTIONS}
                 />
               </Section>
 

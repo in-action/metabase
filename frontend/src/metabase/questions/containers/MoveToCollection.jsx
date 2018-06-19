@@ -5,17 +5,21 @@ import Button from "metabase/components/Button";
 import Icon from "metabase/components/Icon";
 import ModalContent from "metabase/components/ModalContent";
 
-import CollectionListLoader from "metabase/containers/CollectionListLoader";
+import CollectionList from "./CollectionList";
 
 import cx from "classnames";
 
-import Questions from "metabase/entities/questions";
+import { setCollection } from "../questions";
+import { loadCollections } from "../collections";
+
+const mapStateToProps = (state, props) => ({});
 
 const mapDispatchToProps = {
-  defaultSetCollection: Questions.actions.setCollection,
+  loadCollections,
+  defaultSetCollection: setCollection,
 };
 
-@connect(null, mapDispatchToProps)
+@connect(mapStateToProps, mapDispatchToProps)
 export default class MoveToCollection extends Component {
   constructor(props) {
     super(props);
@@ -24,12 +28,16 @@ export default class MoveToCollection extends Component {
     };
   }
 
+  componentWillMount() {
+    this.props.loadCollections();
+  }
+
   async onMove(collection) {
     try {
       this.setState({ error: null });
       const setCollection =
         this.props.setCollection || this.props.defaultSetCollection;
-      await setCollection({ id: this.props.questionId }, collection);
+      await setCollection(this.props.questionId, collection, true);
       this.props.onClose();
     } catch (error) {
       this.setState({ error });
@@ -64,8 +72,8 @@ export default class MoveToCollection extends Component {
         fullPageModal={true}
         onClose={onClose}
       >
-        <CollectionListLoader writable>
-          {({ collections }) => (
+        <CollectionList writable>
+          {collections => (
             <ol
               className="List text-brand ml-auto mr-auto"
               style={{ width: 520 }}
@@ -99,7 +107,7 @@ export default class MoveToCollection extends Component {
                 ))}
             </ol>
           )}
-        </CollectionListLoader>
+        </CollectionList>
       </ModalContent>
     );
   }

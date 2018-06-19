@@ -22,26 +22,35 @@ const DEFAULT_OPTIONS: Options = {
   raw: {},
 };
 
-export type APIMethod = (d?: Data, o?: Options) => Promise<any>;
-export type APICreator = (t: string, o?: Options | TransformFn) => APIMethod;
-
 class Api extends EventEmitter {
   basename: "";
 
-  GET: APICreator;
-  POST: APICreator;
-  PUT: APICreator;
-  DELETE: APICreator;
+  GET: (
+    t: string,
+    o?: Options | TransformFn,
+  ) => (d?: Data, o?: Options) => Promise<any>;
+  POST: (
+    t: string,
+    o?: Options | TransformFn,
+  ) => (d?: Data, o?: Options) => Promise<any>;
+  PUT: (
+    t: string,
+    o?: Options | TransformFn,
+  ) => (d?: Data, o?: Options) => Promise<any>;
+  DELETE: (
+    t: string,
+    o?: Options | TransformFn,
+  ) => (d?: Data, o?: Options) => Promise<any>;
 
   constructor() {
     super();
-    this.GET = this._makeMethod("GET");
-    this.DELETE = this._makeMethod("DELETE");
-    this.POST = this._makeMethod("POST", true);
-    this.PUT = this._makeMethod("PUT", true);
+    this.GET = this._makeMethod("GET").bind(this);
+    this.DELETE = this._makeMethod("DELETE").bind(this);
+    this.POST = this._makeMethod("POST", true).bind(this);
+    this.PUT = this._makeMethod("PUT", true).bind(this);
   }
 
-  _makeMethod(method: string, hasBody: boolean = false): APICreator {
+  _makeMethod(method: string, hasBody: boolean = false) {
     return (
       urlTemplate: string,
       methodOptions?: Options | TransformFn = {},
@@ -66,12 +75,6 @@ class Api extends EventEmitter {
             value = encodeURIComponent(value);
           }
           url = url.replace(tag, value);
-        }
-        // remove undefined
-        for (const name in data) {
-          if (data[name] === undefined) {
-            delete data[name];
-          }
         }
 
         let headers: { [key: string]: string } = {
@@ -139,7 +142,4 @@ class Api extends EventEmitter {
   }
 }
 
-const instance = new Api();
-
-export default instance;
-export const { GET, POST, PUT, DELETE } = instance;
+export default new Api();

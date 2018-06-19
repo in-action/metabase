@@ -2,27 +2,27 @@
   (:require [clojure.core.match :refer [match]]
             [clojure.string :as s]))
 
-(defn- diff-string* [k v1 v2]
-  (match [k v1 v2]
-    [:name _ _]
+(defn- diff-string* [t k v1 v2]
+  (match [t k v1 v2]
+    [_ :name _ _]
     (format "renamed it from \"%s\" to \"%s\"" v1 v2)
 
-    [:private true false]
+    [_ :private true false]
     "made it public"
 
-    [:private false true]
+    [_ :private false true]
     "made it private"
 
-    [:updated_at _ _]
+    [_ :updated_at _ _]
     nil
 
-    [:dataset_query _ _]
+    [_ :dataset_query _ _]
     "modified the query"
 
-    [:visualization_settings _ _]
+    [_ :visualization_settings _ _]
     "changed the visualization settings"
 
-    [_ _ _]
+    [_ _ _ _]
     (format "changed %s from \"%s\" to \"%s\"" (name k) v1 v2)))
 
 (defn build-sentence
@@ -41,6 +41,6 @@
   (when before
     (let [ks (keys before)]
       (some-> (filter identity (for [k ks]
-                                 (diff-string* k (k before) (k after))))
+                                 (diff-string* t k (k before) (k after))))
               build-sentence
               (s/replace-first #" it " (format " this %s " t))))))

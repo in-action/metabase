@@ -19,8 +19,7 @@
             [metabase
              [config :as config]
              [db :as mdb]
-             [util :as u]]
-            [metabase.util.date :as du]))
+             [util :as u]]))
 
 (defn ^:command migrate
   "Run database migrations. Valid options for DIRECTION are `up`, `force`, `down-one`, `print`, or `release-locks`."
@@ -42,7 +41,7 @@
   ;; override env var that would normally make Jetty block forever
   (require 'environ.core)
   (intern 'environ.core 'env (assoc @(resolve 'environ.core/env) :mb-jetty-join "false"))
-  (du/profile "start-normally" ((resolve 'metabase.core/start-normally))))
+  (u/profile "start-normally" ((resolve 'metabase.core/start-normally))))
 
 (defn ^:command reset-password
   "Reset the password for a user with EMAIL-ADDRESS."

@@ -3,7 +3,6 @@ import inflection from "inflection";
 
 import { mbqlEq } from "metabase/lib/query/util";
 import { formatTimeWithUnit } from "metabase/lib/formatting";
-import { parseTimestamp } from "metabase/lib/time";
 
 export const DATETIME_UNITS = [
   // "default",
@@ -140,7 +139,7 @@ export function generateTimeIntervalDescription(n, unit) {
 
 export function generateTimeValueDescription(value, bucketing) {
   if (typeof value === "string") {
-    const m = parseTimestamp(value, bucketing);
+    let m = moment(value);
     if (bucketing) {
       return formatTimeWithUnit(value, bucketing);
     } else if (m.hours() || m.minutes()) {

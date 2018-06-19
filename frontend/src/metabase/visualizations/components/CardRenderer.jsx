@@ -1,4 +1,4 @@
-/* @flow */
+/* eslint "react/prop-types": "warn" */
 
 import React, { Component } from "react";
 import PropTypes from "prop-types";
@@ -8,33 +8,23 @@ import ExplicitSize from "metabase/components/ExplicitSize.jsx";
 
 import { isSameSeries } from "metabase/visualizations/lib/utils";
 
-import type { VisualizationProps } from "metabase/meta/types/Visualization";
-
-type DeregisterFunction = () => void;
-
-type Props = VisualizationProps & {
-  renderer: (element: Element, props: VisualizationProps) => DeregisterFunction,
-};
+import dc from "dc";
 
 @ExplicitSize
 export default class CardRenderer extends Component {
-  props: Props;
-
   static propTypes = {
-    className: PropTypes.string,
     series: PropTypes.array.isRequired,
+    width: PropTypes.number,
+    height: PropTypes.number,
     renderer: PropTypes.func.isRequired,
     onRenderError: PropTypes.func.isRequired,
+    className: PropTypes.string,
   };
 
-  _deregister: ?DeregisterFunction;
-
-  shouldComponentUpdate(nextProps: Props) {
+  shouldComponentUpdate(nextProps, nextState) {
     // a chart only needs re-rendering when the result itself changes OR the chart type is different
     let sameSize =
-      // $FlowFixMe: width/height provided by ExplicitSize
       this.props.width === nextProps.width &&
-      // $FlowFixMe: width/height provided by ExplicitSize
       this.props.height === nextProps.height;
     let sameSeries = isSameSeries(this.props.series, nextProps.series);
     return !(sameSize && sameSeries);
@@ -53,15 +43,14 @@ export default class CardRenderer extends Component {
   }
 
   _deregisterChart() {
-    if (this._deregister) {
+    if (this._chart) {
       // Prevents memory leak
-      this._deregister();
-      delete this._deregister;
+      dc.chartRegistry.deregister(this._chart);
+      delete this._chart;
     }
   }
 
   renderChart() {
-    // $FlowFixMe: width/height provided by ExplicitSize
     if (this.props.width == null || this.props.height == null) {
       return;
     }
@@ -82,7 +71,7 @@ export default class CardRenderer extends Component {
     parent.appendChild(element);
 
     try {
-      this._deregister = this.props.renderer(element, this.props);
+      this._chart = this.props.renderer(element, this.props);
     } catch (err) {
       console.error(err);
       this.props.onRenderError(err.message || err);

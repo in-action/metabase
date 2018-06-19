@@ -17,16 +17,16 @@ export default class CreatedDatabaseModal extends Component {
     const { onClose, onDone, databaseId } = this.props;
     return (
       <ModalContent title={t`Your database has been added!`} onClose={onClose}>
-        <div className="mb4">
+        <div className="Form-inputs mb4">
           <p>
             {t`We took a look at your data, and we have some automated explorations that we can show you!`}
           </p>
         </div>
 
-        <div className="flex layout-centered">
+        <div className="Form-actions flex layout-centered">
           <a className="link" onClick={onDone}>{t`I'm good thanks`}</a>
           <Link
-            to={`/explore/${databaseId}`}
+            to={`/ready/${databaseId}`}
             className="Button Button--primary ml-auto"
           >
             {t`Explore this data`}

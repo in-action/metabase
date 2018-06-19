@@ -1,20 +1,27 @@
 (ns metabase.driver.mongo
   "MongoDB Driver."
   (:require [cheshire.core :as json]
+            [clojure.string :as str]
             [clojure.tools.logging :as log]
             [metabase
              [driver :as driver]
              [util :as u]]
             [metabase.driver.mongo
              [query-processor :as qp]
-             [util :refer [with-mongo-connection]]]
-            [metabase.models.database :refer [Database]]
-            [metabase.util.ssh :as ssh]
+             [util :refer [*mongo-connection* with-mongo-connection]]]
+            [metabase.models
+             [database :refer [Database]]
+             [field :as field]]
+            [metabase.sync.interface :as si]
+            [metabase.util
+             [schema :as su]
+             [ssh :as ssh]]
             [monger
              [collection :as mc]
              [command :as cmd]
              [conversion :as conv]
-             [db :as mdb]]
+             [db :as mdb]
+             [query :as mq]]
             [schema.core :as s]
             [toucan.db :as db])
   (:import com.mongodb.DB))
@@ -50,7 +57,7 @@
 
 (defn- process-query-in-context [qp]
   (fn [{database-id :database, :as query}]
-    (with-mongo-connection [_ (db/select-one [Database :details], :id database-id)]
+    (with-mongo-connection [^DB conn, (db/select-one [Database :details], :id database-id)]
       (qp query))))
 
 
@@ -159,7 +166,6 @@
 
 
 (defrecord MongoDriver []
-  :load-ns true
   clojure.lang.Named
   (getName [_] "MongoDB"))
 

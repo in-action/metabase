@@ -16,7 +16,6 @@ window.MetabaseBootstrap = {
     "America/Costa_Rica",
   ],
   available_locales: [["en", "English"]],
-  // NOTE: update this when updating types.clj
   types: {
     "type/DruidHyperUnique": ["type/*"],
     "type/Longitude": ["type/Coordinate"],
@@ -42,7 +41,6 @@ window.MetabaseBootstrap = {
     "type/Source": ["type/Category"],
     "type/Name": ["type/Category", "type/Text"],
     "type/Decimal": ["type/Float"],
-    "type/Birthdate": ["type/Date"],
     "type/Date": ["type/DateTime"],
     "type/Text": ["type/*"],
     "type/FK": ["type/Special"],
@@ -77,7 +75,7 @@ window.MetabaseBootstrap = {
     "type/Income": ["type/Number"],
     "type/Comment": ["type/Text"],
     "type/Score": ["type/Number"],
-    "type/ZipCode": ["type/Address", "type/Text"],
+    "type/ZipCode": ["type/Integer", "type/Address"],
     "type/DateTime": ["type/*"],
     "type/UNIXTimestamp": ["type/Integer", "type/DateTime"],
     "type/Enum": ["type/Category", "type/*"],

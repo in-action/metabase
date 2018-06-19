@@ -75,9 +75,7 @@ export class WindowModal extends Component {
           {getModalContent({
             ...this.props,
             fullPageModal: false,
-            // if there is a form then its a form modal, or if there's a form
-            // modal prop use that
-            formModal: !!this.props.form || this.props.formModal,
+            formModal: !!this.props.form,
           })}
         </div>
       </OnClickOutsideWrapper>
@@ -190,6 +188,14 @@ export class FullPageModal extends Component {
   }
 }
 
+export class InlineModal extends Component {
+  render() {
+    return (
+      <div>{this.props.isOpen ? <FullPageModal {...this.props} /> : null}</div>
+    );
+  }
+}
+
 /**
  * A modified version of Modal for Jest/Enzyme tests. Renders the modal content inline instead of document root.
  */
@@ -218,11 +224,13 @@ export class TestModal extends Component {
 // the "routeless" version should only be used for non-inline modals
 const RoutelessFullPageModal = routeless(FullPageModal);
 
-const Modal = ({ full, ...props }) =>
+const Modal = ({ full, inline, ...props }) =>
   full ? (
     props.isOpen ? (
       <RoutelessFullPageModal {...props} />
     ) : null
+  ) : inline ? (
+    <InlineModal {...props} />
   ) : (
     <WindowModal {...props} />
   );

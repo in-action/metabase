@@ -16,19 +16,23 @@
              [format :as tformat]]
             [clojure.tools.logging :as log]
             [medley.core :as m]
-            [metabase
-             [config :as config]
-             [util :as u]]
+            [metabase.config :as config]
             [metabase.models
              [database :refer [Database]]
-             [setting :refer [defsetting]]]
+             field
+             [setting :refer [defsetting]]
+             table]
             [metabase.sync.interface :as si]
-            [metabase.util.date :as du]
-            [puppetlabs.i18n.core :refer [trs tru]]
+            [metabase.util :as u]
+            [puppetlabs.i18n.core :refer [tru]]
             [schema.core :as s]
+            [puppetlabs.i18n.core :refer [trs tru]]
             [toucan.db :as db])
   (:import clojure.lang.Keyword
            java.text.SimpleDateFormat
+           metabase.models.database.DatabaseInstance
+           metabase.models.field.FieldInstance
+           metabase.models.table.TableInstance
            org.joda.time.DateTime
            org.joda.time.format.DateTimeFormatter))
 
@@ -69,23 +73,23 @@
 
   (date-interval [this, ^Keyword unit, ^Number amount]
     "*OPTIONAL* Return an driver-appropriate representation of a moment relative to the current moment in time. By
-     default, this returns an `Timestamp` by calling `metabase.util.date/relative-date`; but when possible drivers should
+     default, this returns an `Timestamp` by calling `metabase.util/relative-date`; but when possible drivers should
      return a native form so we can be sure the correct timezone is applied. For example, SQL drivers should return a
      HoneySQL form to call the appropriate SQL fns:
 
        (date-interval (PostgresDriver.) :month 1) -> (hsql/call :+ :%now (hsql/raw \"INTERVAL '1 month'\"))")
 
-  (describe-database ^java.util.Map [this database]
+  (describe-database ^java.util.Map [this, ^DatabaseInstance database]
     "Return a map containing information that describes all of the schema settings in DATABASE, most notably a set of
      tables. It is expected that this function will be peformant and avoid draining meaningful resources of the
      database. Results should match the `DatabaseMetadata` schema.")
 
-  (describe-table ^java.util.Map [this database table]
+  (describe-table ^java.util.Map [this, ^DatabaseInstance database, ^TableInstance table]
     "Return a map containing information that describes the physical schema of TABLE.
      It is expected that this function will be peformant and avoid draining meaningful resources of the database.
      Results should match the `TableMetadata` schema.")
 
-  (describe-table-fks ^java.util.Set [this database table]
+  (describe-table-fks ^java.util.Set [this, ^DatabaseInstance database, ^TableInstance table]
     "*OPTIONAL*, BUT REQUIRED FOR DRIVERS THAT SUPPORT `:foreign-keys`*
      Results should match the `FKMetadata` schema.")
 
@@ -189,7 +193,7 @@
        {:query \"-- [Contents of `(query->remark query)`]
                  SELECT * FROM my_table\"}")
 
-  (notify-database-updated [this database]
+  (notify-database-updated [this, ^DatabaseInstance database]
     "*OPTIONAL*. Notify the driver that the attributes of the DATABASE have changed. This is specifically relevant in
      the event that the driver was doing some caching or connection pooling.")
 
@@ -204,7 +208,7 @@
          (fn [query]
            (qp query)))")
 
-  (^{:style/indent 2} sync-in-context [this database ^clojure.lang.IFn f]
+  (^{:style/indent 2} sync-in-context [this, ^DatabaseInstance database, ^clojure.lang.IFn f]
     "*OPTIONAL*. Drivers may provide this function if they need to do special setup before a sync operation such as
      `sync-database!`. The sync operation itself is encapsulated as the lambda F, which must be called with no
      arguments.
@@ -213,7 +217,7 @@
          (with-connection [_ database]
            (f)))")
 
-  (table-rows-seq ^clojure.lang.Sequential [this database ^java.util.Map table]
+  (table-rows-seq ^clojure.lang.Sequential [this, ^DatabaseInstance database, ^java.util.Map table]
     "*OPTIONAL*. Return a sequence of *all* the rows in a given TABLE, which is guaranteed to have at least `:name`
      and `:schema` keys. (It is guaranteed too satisfy the `DatabaseMetadataTable` schema in
      `metabase.sync.interface`.) Currently, this is only used for iterating over the values in a `_metabase_metadata`
@@ -221,7 +225,7 @@
      table. As such, the results are not expected to be returned lazily. There is no expectation that the results be
      returned in any given order.")
 
-  (current-db-time ^org.joda.time.DateTime [this database]
+  (current-db-time ^org.joda.time.DateTime [this ^DatabaseInstance database]
     "Returns the current time and timezone from the perspective of `DATABASE`.")
 
   (default-to-case-sensitive? ^Boolean [this]
@@ -231,7 +235,7 @@
 
 (def IDriverDefaultsMixin
   "Default implementations of `IDriver` methods marked *OPTIONAL*."
-  {:date-interval                     (u/drop-first-arg du/relative-date)
+  {:date-interval                     (u/drop-first-arg u/relative-date)
    :describe-table-fks                (constantly nil)
    :features                          (constantly nil)
    :format-custom-field-name          (u/drop-first-arg identity)
@@ -319,7 +323,6 @@
 ;; as it's not threadsafe. This will always create a new SimpleDateFormat instance and discard it after parsing the
 ;; date
 (defrecord ^:private ThreadSafeSimpleDateFormat [format-str]
-  :load-ns true
   ParseDateTimeString
   (parse [_ date-time-str]
     (let [sdf         (SimpleDateFormat. format-str)

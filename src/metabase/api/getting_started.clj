@@ -1,12 +1,10 @@
 (ns metabase.api.getting-started
-  "/api/getting_started routes."
   (:require [compojure.core :refer [GET]]
             [medley.core :as m]
             [metabase.api.common :as api]
             [metabase.models
              [interface :as mi]
              [setting :refer [defsetting]]]
-            [metabase.util :as u]
             [puppetlabs.i18n.core :refer [tru]]
             [toucan.db :as db]))
 
@@ -29,10 +27,9 @@
     {:things_to_know           (getting-started-things-to-know)
      :contact                  {:name  (getting-started-contact-name)
                                 :email (getting-started-contact-email)}
-     :most_important_dashboard (when-let [dashboard (db/select-one ['Dashboard :id :collection_id]
-                                                      :show_in_getting_started true)]
+     :most_important_dashboard (when-let [dashboard (db/select-one ['Dashboard :id] :show_in_getting_started true)]
                                  (when (mi/can-read? dashboard)
-                                   (u/get-id dashboard)))
+                                   (:id dashboard)))
      :important_metrics        metric-ids
      :important_tables         table-ids
      :important_segments       segment-ids

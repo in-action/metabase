@@ -133,7 +133,9 @@
      :entity_type  "entity/GenericTable"}}
   (->> ((user->client :rasta) :get 200 "table")
        (filter #(= (:db_id %) (data/id))) ; prevent stray tables from affecting unit test results
-       (map #(select-keys % [:name :display_name :rows :id :entity_type]))
+       (map #(dissoc %
+                     :raw_table_id :db :created_at :updated_at :schema :entity_name :description :visibility_type
+                     :caveats :points_of_interest :show_in_getting_started :db_id :active))
        set))
 
 
@@ -150,8 +152,7 @@
             :id           (data/id :venues)
             :db_id        (data/id)
             :raw_table_id $
-            :created_at   $
-            :fields_hash  $}))
+            :created_at   $}))
   ((user->client :rasta) :get 200 (format "table/%d" (data/id :venues))))
 
 ;; GET /api/table/:id should return a 403 for a user that doesn't have read permissions for the table
@@ -200,8 +201,7 @@
             :updated_at   $
             :id           (data/id :categories)
             :raw_table_id $
-            :created_at   $
-            :fields_hash  $}))
+            :created_at   $}))
   ((user->client :rasta) :get 200 (format "table/%d/query_metadata" (data/id :categories))))
 
 
@@ -275,8 +275,7 @@
             :updated_at   $
             :id           (data/id :users)
             :raw_table_id $
-            :created_at   $
-            :fields_hash  $}))
+            :created_at   $}))
   ((user->client :rasta) :get 200 (format "table/%d/query_metadata?include_sensitive_fields=true" (data/id :users))))
 
 ;;; GET api/table/:id/query_metadata
@@ -317,8 +316,7 @@
             :updated_at   $
             :id           (data/id :users)
             :raw_table_id $
-            :created_at   $
-            :fields_hash  $}))
+            :created_at   $}))
   ((user->client :rasta) :get 200 (format "table/%d/query_metadata" (data/id :users))))
 
 ;; Check that FK fields belonging to Tables we don't have permissions for don't come back as hydrated `:target`(#3867)
@@ -348,7 +346,7 @@
              (assoc-in [:db :details] {:db "mem:test-data;USER=GUEST;PASSWORD=guest"}))
          (match-$ table
            {:description     "What a nice table!"
-            :entity_type     nil
+            :entity_type     "person"
             :visibility_type "hidden"
             :schema          $
             :name            $
@@ -357,9 +355,9 @@
             :pk_field        (#'table/pk-field-id $$)
             :id              $
             :raw_table_id    $
-            :created_at      $
-            :fields_hash     $}))
+            :created_at      $}))
   (do ((user->client :crowberto) :put 200 (format "table/%d" (:id table)) {:display_name    "Userz"
+                                                                           :entity_type     "person"
                                                                            :visibility_type "hidden"
                                                                            :description     "What a nice table!"})
       (dissoc ((user->client :crowberto) :get 200 (format "table/%d" (:id table)))
@@ -375,6 +373,7 @@
                    (with-redefs [sync/sync-table! (fn [& args] (swap! called inc)
                                                     (apply original-sync-table! args))]
                      ((user->client :crowberto) :put 200 (format "table/%d" (:id table)) {:display_name    "Userz"
+                                                                                          :entity_type     "person"
                                                                                           :visibility_type state
                                                                                           :description     "What a nice table!"})))]
     (do (test-fun "hidden")
@@ -413,8 +412,7 @@
                                                           :updated_at   $
                                                           :id           $
                                                           :raw_table_id $
-                                                          :created_at   $
-                                                          :fields_hash  $}))))
+                                                          :created_at   $}))))
       :destination    (-> (fk-field-details users-id-field)
                           (dissoc :target :dimensions :values)
                           (assoc :table_id      (data/id :users)
@@ -433,8 +431,7 @@
                                                           :updated_at   $
                                                           :id           $
                                                           :raw_table_id $
-                                                          :created_at   $
-                                                          :fields_hash  $}))))}])
+                                                          :created_at   $}))))}])
   ((user->client :rasta) :get 200 (format "table/%d/fks" (data/id :users))))
 
 ;; Make sure metadata for 'virtual' tables comes back as expected from GET /api/table/:id/query_metadata
@@ -657,7 +654,7 @@
  (let [response ((user->client :rasta) :get 200 (format "table/%d/query_metadata" (data/id :checkins)))]
    (dimension-options-for-field response "date")))
 
-(qpt/expect-with-non-timeseries-dbs-except #{:oracle :mongo :redshift :sparksql}
+(qpt/expect-with-non-timeseries-dbs-except #{:oracle :mongo :redshift}
   []
   (data/with-db (data/get-or-create-database! defs/test-data-with-time)
     (let [response ((user->client :rasta) :get 200 (format "table/%d/query_metadata" (data/id :users)))]

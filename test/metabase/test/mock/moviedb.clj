@@ -68,7 +68,7 @@
                :base-type :type/Text}}}})
 
 
-(defrecord ^:private MovieDbDriver []
+(defrecord MovieDbDriver []
   clojure.lang.Named
   (getName [_] "MovieDbDriver"))
 

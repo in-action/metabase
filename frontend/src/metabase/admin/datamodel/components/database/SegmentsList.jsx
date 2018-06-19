@@ -15,7 +15,7 @@ export default class SegmentsList extends Component {
 
     tableMetadata.segments = tableMetadata.segments || [];
     tableMetadata.segments = tableMetadata.segments.filter(
-      sgmt => sgmt.archived === false,
+      sgmt => sgmt.is_active === true,
     );
 
     return (

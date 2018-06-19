@@ -23,7 +23,6 @@ import _ from "underscore";
 import cx from "classnames";
 
 const MOBILE_ASPECT_RATIO = 3 / 2;
-const MOBILE_TEXT_CARD_ROW_HEIGHT = 40;
 
 @ExplicitSize
 export default class DashboardGrid extends Component {
@@ -73,11 +72,11 @@ export default class DashboardGrid extends Component {
   }
 
   onLayoutChange(layout) {
-    let changes = layout.filter(
+    var changes = layout.filter(
       newLayout =>
         !_.isEqual(newLayout, this.getLayoutForDashCard(newLayout.dashcard)),
     );
-    for (let change of changes) {
+    for (var change of changes) {
       this.props.setDashCardAttributes({
         id: change.dashcard.id,
         attributes: {
@@ -252,11 +251,7 @@ export default class DashboardGrid extends Component {
                 width: width,
                 marginTop: 10,
                 marginBottom: 10,
-                height:
-                  // "text" cards should get a height based on their dc sizeY
-                  dc.card.display === "text"
-                    ? MOBILE_TEXT_CARD_ROW_HEIGHT * dc.sizeY
-                    : width / MOBILE_ASPECT_RATIO,
+                height: width / MOBILE_ASPECT_RATIO,
               }}
             >
               {this.renderDashCard(dc, true)}

@@ -2,7 +2,7 @@ import querystring from "querystring";
 
 export function parseHashOptions(hash) {
   let options = querystring.parse(hash.replace(/^#/, ""));
-  for (let name in options) {
+  for (var name in options) {
     if (options[name] === "") {
       options[name] = true;
     } else if (/^(true|false|-?\d+(\.\d+)?)$/.test(options[name])) {

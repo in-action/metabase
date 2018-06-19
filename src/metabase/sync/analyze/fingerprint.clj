@@ -15,9 +15,7 @@
              [sample :as sample]
              [text :as text]]
             [metabase.util :as u]
-            [metabase.util
-             [date :as du]
-             [schema :as su]]
+            [metabase.util.schema :as su]
             [schema.core :as s]
             [toucan.db :as db]))
 
@@ -53,26 +51,13 @@
       :fingerprint_version i/latest-fingerprint-version
       :last_analyzed       nil)))
 
-(defn- empty-stats-map [fields-count]
-  {:no-data-fingerprints   0
-   :failed-fingerprints    0
-   :updated-fingerprints   0
-   :fingerprints-attempted fields-count})
-
 (s/defn ^:private fingerprint-table!
   [table :- i/TableInstance, fields :- [i/FieldInstance]]
-  (let [fields-to-sample (sample/sample-fields table fields)]
-    (reduce (fn [count-info [field sample]]
-              (if-not sample
-                (update count-info :no-data-fingerprints inc)
-                (let [result (sync-util/with-error-handling (format "Error generating fingerprint for %s"
-                                                                    (sync-util/name-for-logging field))
-                               (save-fingerprint! field (fingerprint field sample)))]
-                  (if (instance? Exception result)
-                    (update count-info :failed-fingerprints inc)
-                    (update count-info :updated-fingerprints inc)))))
-            (empty-stats-map (count fields-to-sample))
-            fields-to-sample)))
+  (doseq [[field sample] (sample/sample-fields table fields)]
+    (when sample
+      (sync-util/with-error-handling (format "Error generating fingerprint for %s" (sync-util/name-for-logging field))
+        (let [fingerprint (fingerprint field sample)]
+          (save-fingerprint! field fingerprint))))))
 
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
@@ -169,18 +154,5 @@
 (s/defn fingerprint-fields!
   "Generate and save fingerprints for all the Fields in TABLE that have not been previously analyzed."
   [table :- i/TableInstance]
-  (if-let [fields (fields-to-fingerprint table)]
-    (fingerprint-table! table fields)
-    (empty-stats-map 0)))
-
-(s/defn fingerprint-fields-for-db!
-  "Invokes `fingerprint-fields!` on every table in `database`"
-  [database :- i/DatabaseInstance
-   tables :- [i/TableInstance]
-   log-progress-fn]
-  (du/with-effective-timezone database
-    (apply merge-with + (for [table tables
-                              :let [result (fingerprint-fields! table)]]
-                          (do
-                            (log-progress-fn "fingerprint-fields" table)
-                            result)))))
+  (when-let [fields (fields-to-fingerprint table)]
+    (fingerprint-table! table fields)))

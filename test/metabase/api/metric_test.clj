@@ -26,7 +26,7 @@
    :how_is_this_calculated  nil
    :created_at              true
    :updated_at              true
-   :archived                false
+   :is_active               true
    :definition              {}})
 
 (defn- user-details [user]
@@ -183,7 +183,7 @@
            :description "Lookin' for a blueberry"
            :creator_id  (user->id :rasta)
            :creator     (user-details (fetch-user :rasta))
-           :archived    true})]
+           :is_active   false})]
   (tt/with-temp* [Database [{database-id :id}]
                   Table    [{table-id :id} {:db_id database-id}]
                   Metric   [{:keys [id]}   {:table_id table-id}]]
@@ -364,7 +364,7 @@
 
 (tt/expect-with-temp [Metric [metric-1 {:name "Metric A"}]
                       Metric [metric-2 {:name "Metric B"}]
-                      Metric [_        {:archived true}]] ; inactive metrics shouldn't show up
+                      Metric [_        {:is_active false}]] ; inactive metrics shouldn't show up
   (tu/mappify (hydrate [(assoc metric-1 :database_id (data/id))
                         (assoc metric-2 :database_id (data/id))]
                        :creator))

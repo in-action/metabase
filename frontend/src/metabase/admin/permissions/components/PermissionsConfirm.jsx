@@ -1,6 +1,7 @@
 import React from "react";
 
-import { t, ngettext, msgid } from "c-3po";
+import { inflect } from "metabase/lib/formatting";
+import { t } from "c-3po";
 import Tooltip from "metabase/components/Tooltip";
 
 const GroupName = ({ group }) => (
@@ -24,9 +25,9 @@ const TableAccessChange = ({ tables, verb, color }) => {
         <span>
           <span className={color}>
             {" " +
-              (n => ngettext(msgid`${n} table`, `${n} tables`, n))(
-                tableNames.length,
-              )}
+              tableNames.length +
+              " " +
+              inflect("table", tableNames.length)}
           </span>
         </span>
       </Tooltip>

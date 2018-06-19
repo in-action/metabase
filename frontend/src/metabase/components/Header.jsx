@@ -75,7 +75,7 @@ export default class Header extends Component {
   }
 
   render() {
-    let titleAndDescription;
+    var titleAndDescription;
     if (this.props.isEditingInfo) {
       titleAndDescription = (
         <div className="Header-title flex flex-column flex-full bordered rounded my1">
@@ -112,7 +112,7 @@ export default class Header extends Component {
       }
     }
 
-    let attribution;
+    var attribution;
     if (this.props.item && this.props.item.creator) {
       attribution = (
         <div className="Header-attribution">
@@ -121,7 +121,7 @@ export default class Header extends Component {
       );
     }
 
-    let headerButtons = this.props.headerButtons.map(
+    var headerButtons = this.props.headerButtons.map(
       (section, sectionIndex) => {
         return (
           section &&

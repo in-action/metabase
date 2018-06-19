@@ -5,7 +5,7 @@
              [set :as set]
              [string :as string]]
             [clojure.tools.logging :as log]
-            [compojure.core :refer [DELETE POST PUT]]
+            [compojure.core :refer [POST PUT]]
             [metabase
              [config :as config]
              [email :as email]]
@@ -89,13 +89,6 @@
       ;; test failed, return response message
       {:status 500
        :body   (humanize-error-messages response)})))
-
-(api/defendpoint DELETE "/"
-  "Clear all email related settings. You must be a superuser to ddo this"
-  []
-  (api/check-superuser)
-  (setting/set-many! (zipmap (keys mb-to-smtp-settings) (repeat nil)))
-  api/generic-204-no-content)
 
 (api/defendpoint POST "/test"
   "Send a test email. You must be a superuser to do this."

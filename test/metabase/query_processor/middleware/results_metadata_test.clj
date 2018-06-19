@@ -5,10 +5,7 @@
              [util :as u]]
             [metabase.models
              [card :refer [Card]]
-             [collection :refer [Collection]]
-             [database :as database]
-             [permissions :as perms]
-             [permissions-group :as group]]
+             [database :as database]]
             [metabase.query-processor.middleware.results-metadata :as results-metadata]
             [metabase.test.data :as data]
             [metabase.test.data.users :as users]
@@ -50,11 +47,8 @@
 ;; ...even when running via the API endpoint
 (expect
   {:name "NAME", :display_name "Name", :base_type "type/Text"}
-  (tt/with-temp* [Collection [collection]
-                  Card       [card {:collection_id   (u/get-id collection)
-                                    :dataset_query   (native-query "SELECT * FROM VENUES")
-                                    :result_metadata {:name "NAME", :display_name "Name", :base_type "type/Text"}}]]
-    (perms/grant-collection-read-permissions! (group/all-users) collection)
+  (tt/with-temp Card [card {:dataset_query   (native-query "SELECT * FROM VENUES")
+                            :result_metadata {:name "NAME", :display_name "Name", :base_type "type/Text"}}]
     ((users/user->client :rasta) :post 200 "dataset" {:database database/virtual-id
                                                       :type     :query
                                                       :query    {:source-table (str "card__" (u/get-id card))}})
@@ -81,12 +75,11 @@
              {:base_type :type/Float,   :display_name "Longitude",   :name "LONGITUDE"}]}
   (-> (qp/process-query {:database (data/id)
                          :type     :native
-                         :native   {:query "SELECT ID, NAME, PRICE, CATEGORY_ID, LATITUDE, LONGITUDE FROM VENUES"}})
+                         :native   {:query (format "SELECT ID, NAME, PRICE, CATEGORY_ID, LATITUDE, LONGITUDE FROM VENUES")}})
       (get-in [:data :results_metadata])
       (update :checksum class)))
 
-;; make sure that a Card where a DateTime column is broken out by year advertises that column as Text, since you can't
-;; do datetime breakouts on years
+;; make sure that a Card where a DateTime column is broken out by year advertises that column as Text, since you can't do datetime breakouts on years
 (expect
   [{:base_type    "type/Text"
     :display_name "Date"

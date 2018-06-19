@@ -3,8 +3,6 @@ import { Link } from "react-router";
 import { t } from "c-3po";
 import * as Urls from "metabase/lib/urls";
 
-// TODO: port to ErrorMessage for more consistent style
-
 export default class NotFound extends Component {
   render() {
     return (

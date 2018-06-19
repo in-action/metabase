@@ -9,12 +9,10 @@
              [expand :as ql]
              [resolve :as resolve]
              [source-table :as source-table]]
-            [metabase.query-processor-test :as qpt]
             [metabase.test
              [data :as data :refer :all]
              [util :as tu]]
-            [metabase.test.data.dataset-definitions :as defs]
-            [metabase.util.date :as du]))
+            [metabase.test.data.dataset-definitions :as defs]))
 
 ;; this is here because expectations has issues comparing and object w/ a map and most of the output
 ;; below has objects for the various place holders in the expanded/resolved query
@@ -241,7 +239,7 @@
                                                                                     :type   {:type/DateTime {:earliest "2014-01-01T00:00:00.000Z"
                                                                                                              :latest   "2014-12-05T00:00:00.000Z"}}}})
                                                 :unit  :year}
-                                  :value       {:value (du/->Timestamp #inst "1980-01-01")
+                                  :value       {:value (u/->Timestamp "1980-01-01")
                                                 :field {:field
                                                         (merge field-defaults
                                                                {:field-id           (id :users :last_login)
@@ -268,11 +266,11 @@
                                    :join-alias   "USERS__via__USER_ID"}]}
     :fk-field-ids #{(id :checkins :user_id)}
     :table-ids    #{(id :users)}}]
-  (qpt/with-h2-db-timezone
-    (let [expanded-form (ql/expand (wrap-inner-query (query checkins
-                                                       (ql/filter (ql/> (ql/datetime-field $user_id->users.last_login :year)
-                                                                        "1980-01-01")))))]
-      (mapv obj->map [expanded-form (resolve' expanded-form)]))))
+  (let [expanded-form (ql/expand (wrap-inner-query (query checkins
+                                                     (ql/filter (ql/> (ql/datetime-field $user_id->users.last_login :year)
+                                                                      "1980-01-01")))))]
+    (mapv obj->map [expanded-form
+                    (resolve' expanded-form)])))
 
 
 ;; sum aggregation w/ datetime breakout

@@ -97,9 +97,6 @@ export const logout = createThunkAction(LOGOUT, function() {
     MetabaseAnalytics.trackEvent("Auth", "Logout");
 
     dispatch(push("/auth/login"));
-
-    // refresh to ensure all application state is cleared
-    window.location.reload();
   };
 });
 

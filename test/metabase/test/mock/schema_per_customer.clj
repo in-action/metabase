@@ -41,7 +41,7 @@
                                  {:name         "name"
                                   :base-type    :type/Text}}}}})
 
-(defrecord ^:private SchemaPerCustomerDriver []
+(defrecord SchemaPerCustomerDriver []
   clojure.lang.Named
   (getName [_] "SchemaPerCustomerDriver"))
 

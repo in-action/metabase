@@ -3,7 +3,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { t } from "c-3po";
+
 import S from "./DashCardCardParameterMapper.css";
 
 import PopoverWithTrigger from "metabase/components/PopoverWithTrigger.jsx";
@@ -137,9 +137,11 @@ export default class DashCardCardParameterMapper extends Component {
 
     let tooltipText = null;
     if (disabled) {
-      tooltipText = t`This card doesn't have any fields or parameters that can be mapped to this parameter type.`;
+      tooltipText =
+        "This card doesn't have any fields or parameters that can be mapped to this parameter type.";
     } else if (noOverlap) {
-      tooltipText = t`The values in this field don't overlap with the values of any other fields you've chosen.`;
+      tooltipText =
+        "The values in this field don't overlap with the values of any other fields you've chosen.";
     }
 
     return (
@@ -183,8 +185,8 @@ export default class DashCardCardParameterMapper extends Component {
               >
                 <span className="text-centered mr1">
                   {disabled
-                    ? t`No valid fields`
-                    : selected ? selected.name : t`Select…`}
+                    ? "No valid fields"
+                    : selected ? selected.name : "Select…"}
                 </span>
                 {selected ? (
                   <Icon

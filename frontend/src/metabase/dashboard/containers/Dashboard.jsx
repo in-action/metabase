@@ -1,7 +1,5 @@
 /* @flow */
 
-// TODO: merge with metabase/dashboard/components/Dashboard.jsx
-
 import React, { Component } from "react";
 import cx from "classnames";
 
@@ -45,9 +43,15 @@ export class Dashboard extends Component {
       <LoadingAndErrorWrapper
         className={cx("Dashboard p1 flex-full")}
         loading={!dashboard}
-        noBackground
       >
-        {() => <DashboardGrid {...this.props} className={"spread"} />}
+        {() => (
+          <DashboardGrid
+            {...this.props}
+            className={"spread"}
+            // Don't allow clicking titles on public dashboards
+            navigateToNewCardFromDashboard={null}
+          />
+        )}
       </LoadingAndErrorWrapper>
     );
   }

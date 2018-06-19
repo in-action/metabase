@@ -10,7 +10,6 @@ import Icon from "metabase/components/Icon.jsx";
 import PopoverWithTrigger from "metabase/components/PopoverWithTrigger.jsx";
 
 import cx from "classnames";
-import _ from "underscore";
 
 export default class Select extends Component {
   static propTypes = {
@@ -49,27 +48,21 @@ class BrowserSelect extends Component {
     // we should not allow this
     className: PropTypes.string,
     compact: PropTypes.bool,
-    multiple: PropTypes.bool,
   };
   static defaultProps = {
     className: "",
     width: 320,
     height: 320,
     rowHeight: 40,
-    multiple: false,
   };
 
   isSelected(otherValue) {
-    const { value, multiple } = this.props;
-    if (multiple) {
-      return _.any(value, v => v === otherValue);
-    } else {
-      return (
-        value === otherValue ||
-        ((value == null || value === "") &&
-          (otherValue == null || otherValue === ""))
-      );
-    }
+    const { value } = this.props;
+    return (
+      value === otherValue ||
+      ((value == null || value === "") &&
+        (otherValue == null || otherValue === ""))
+    );
   }
 
   render() {
@@ -85,16 +78,18 @@ class BrowserSelect extends Component {
       width,
       height,
       rowHeight,
-      multiple,
     } = this.props;
 
     let children = this.props.children;
 
-    let selectedNames = children
-      .filter(child => this.isSelected(child.props.value))
-      .map(child => child.props.children);
-    if (_.isEmpty(selectedNames) && placeholder) {
-      selectedNames = [placeholder];
+    let selectedName;
+    for (const child of children) {
+      if (this.isSelected(child.props.value)) {
+        selectedName = child.props.children;
+      }
+    }
+    if (selectedName == null && placeholder) {
+      selectedName = placeholder;
     }
 
     const { inputValue } = this.state;
@@ -133,14 +128,7 @@ class BrowserSelect extends Component {
         className={className}
         triggerElement={
           triggerElement || (
-            <SelectButton hasValue={multiple ? value.length > 0 : !!value}>
-              {selectedNames.map((name, index) => (
-                <span key={index}>
-                  {name}
-                  {index < selectedNames.length - 1 ? ", " : ""}
-                </span>
-              ))}
-            </SelectButton>
+            <SelectButton hasValue={!!value}>{selectedName}</SelectButton>
           )
         }
         triggerClasses={className}
@@ -183,18 +171,9 @@ class BrowserSelect extends Component {
                     selected: this.isSelected(child.props.value),
                     onClick: () => {
                       if (!child.props.disabled) {
-                        if (multiple) {
-                          const value = this.isSelected(child.props.value)
-                            ? this.props.value.filter(
-                                v => v !== child.props.value,
-                              )
-                            : this.props.value.concat([child.props.value]);
-                          onChange({ target: { value } });
-                        } else {
-                          onChange({ target: { value: child.props.value } });
-                          this.refs.popover.close();
-                        }
+                        onChange({ target: { value: child.props.value } });
                       }
+                      this.refs.popover.close();
                     },
                   })}
                 </div>
@@ -325,11 +304,11 @@ class LegacySelect extends Component {
       disabled,
     } = this.props;
 
-    let selectedName = value
+    var selectedName = value
       ? optionNameFn(value)
       : options && options.length > 0 ? placeholder : emptyPlaceholder;
 
-    let triggerElement = (
+    var triggerElement = (
       <div
         className={cx(
           "flex align-center",
@@ -352,9 +331,9 @@ class LegacySelect extends Component {
       </div>
     );
 
-    let sections = {};
+    var sections = {};
     options.forEach(function(option) {
-      let sectionName = option.section || "";
+      var sectionName = option.section || "";
       sections[sectionName] = sections[sectionName] || {
         title: sectionName || undefined,
         items: [],
@@ -363,7 +342,7 @@ class LegacySelect extends Component {
     });
     sections = Object.keys(sections).map(sectionName => sections[sectionName]);
 
-    let columns = [
+    var columns = [
       {
         selectedItem: value,
         selectedItems: values,

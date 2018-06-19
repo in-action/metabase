@@ -3,7 +3,7 @@
 import type { ISO8601Time } from ".";
 import type { FieldId } from "./Field";
 import type { DatasetQuery } from "./Card";
-import type { DatetimeUnit, FieldLiteral } from "./Query";
+import type { DatetimeUnit } from "./Query";
 
 export type ColumnName = string;
 
@@ -13,7 +13,7 @@ export type BinningInfo = {
 
 // TODO: incomplete
 export type Column = {
-  id: ?(FieldId | FieldLiteral), // NOTE: sometimes id is a field reference, e.x. nested queries?
+  id: ?FieldId,
   name: ColumnName,
   display_name: string,
   base_type: string,

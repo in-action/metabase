@@ -14,7 +14,6 @@ import type {
   ParameterValue,
   ParameterValueOrArray,
   ParameterValues,
-  ParameterType,
 } from "metabase/meta/types/Parameter";
 import type { FieldId } from "metabase/meta/types/Field";
 import type { Metadata } from "metabase/meta/types/Metadata";
@@ -216,15 +215,5 @@ export function parameterToMBQLFilter(
     } else {
       return stringParameterValueToMBQL(parameter.value, fieldRef);
     }
-  }
-}
-
-export function getParameterIconName(parameterType: ?ParameterType) {
-  if (/^date\//.test(parameterType || "")) {
-    return "calendar";
-  } else if (/^location\//.test(parameterType || "")) {
-    return "location";
-  } else {
-    return "label";
   }
 }

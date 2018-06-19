@@ -2,17 +2,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { t } from "c-3po";
-import cx from "classnames";
-
-// components
 import QueryButton from "metabase/components/QueryButton.jsx";
-import Expandable from "metabase/components/Expandable.jsx";
-
-// lib
 import { createCard } from "metabase/lib/card";
 import { createQuery } from "metabase/lib/query";
 import { foreignKeyCountsByOriginTable } from "metabase/lib/schema_metadata";
-import { inflect } from "metabase/lib/formatting";
+import inflection from "inflection";
+import cx from "classnames";
+
+import Expandable from "metabase/components/Expandable.jsx";
 
 export default class TablePane extends Component {
   constructor(props, context) {
@@ -69,9 +66,9 @@ export default class TablePane extends Component {
   render() {
     const { table, error } = this.state;
     if (table) {
-      let queryButton;
+      var queryButton;
       if (table.rows != null) {
-        let text = t`See the raw data for ${table.display_name}`;
+        var text = t`See the raw data for ${table.display_name}`;
         queryButton = (
           <QueryButton
             className="border-bottom border-top mb3"
@@ -81,13 +78,13 @@ export default class TablePane extends Component {
           />
         );
       }
-      let panes = {
+      var panes = {
         fields: table.fields.length,
         // "metrics": table.metrics.length,
         // "segments": table.segments.length,
         connections: this.state.tableForeignKeys.length,
       };
-      let tabs = Object.entries(panes).map(([name, count]) => (
+      var tabs = Object.entries(panes).map(([name, count]) => (
         <a
           key={name}
           className={cx("Button Button--small", {
@@ -96,12 +93,11 @@ export default class TablePane extends Component {
           onClick={this.showPane.bind(null, name)}
         >
           <span className="DataReference-paneCount">{count}</span>
-          <span>{inflect(name, count)}</span>
+          <span>{inflection.inflect(name, count)}</span>
         </a>
       ));
 
-      let pane;
-      let description;
+      var pane;
       if (this.state.pane === "connections") {
         const fkCountsByTable = foreignKeyCountsByOriginTable(
           this.state.tableForeignKeys,
@@ -144,14 +140,12 @@ export default class TablePane extends Component {
             ))}
           </ul>
         );
-      } else {
-        const descriptionClasses = cx({ "text-grey-3": !table.description });
-        description = (
-          <p className={descriptionClasses}>
-            {table.description || t`No description set.`}
-          </p>
-        );
-      }
+      } else var descriptionClasses = cx({ "text-grey-3": !table.description });
+      var description = (
+        <p className={descriptionClasses}>
+          {table.description || t`No description set.`}
+        </p>
+      );
 
       return (
         <div>
@@ -165,7 +159,7 @@ export default class TablePane extends Component {
                 type="metrics"
                 show={this.props.show.bind(null, "metric")}
                 items={table.metrics.filter(
-                  metric => metric.archived === false,
+                  metric => metric.is_active === true,
                 )}
               />
             )}
@@ -176,7 +170,7 @@ export default class TablePane extends Component {
                 type="segments"
                 show={this.props.show.bind(null, "segment")}
                 items={table.segments.filter(
-                  segment => segment.archived === false,
+                  segment => segment.is_active === true,
                 )}
               />
             )}

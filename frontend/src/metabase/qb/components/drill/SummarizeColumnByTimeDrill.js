@@ -32,19 +32,16 @@ export default ({ question, clicked }: ClickActionProps): ClickAction[] => {
     return [];
   }
   const { column } = clicked;
-  const pivotFieldRef = isDate(column)
-    ? getFieldRefFromColumn(column)
-    : ["field-id", dateField.id];
 
-  return ["sum"]
+  return ["sum", "count"]
     .map(getAggregator)
     .filter(aggregator => isCompatibleAggregatorForField(aggregator, column))
     .map(aggregator => ({
       name: "summarize-by-time",
-      section: "distribution",
+      section: "sum",
       title: (
         <span>
-          {capitalize(aggregator.short)} {t`over time`}
+          {capitalize(aggregator.short)} {t`by time`}
         </span>
       ),
       question: () =>
@@ -54,6 +51,8 @@ export default ({ question, clicked }: ClickActionProps): ClickAction[] => {
               ? [aggregator.short, getFieldRefFromColumn(column)]
               : [aggregator.short],
           )
-          .pivot([["datetime-field", pivotFieldRef, "day"]]),
+          .pivot([
+            ["datetime-field", getFieldRefFromColumn(dateField), "as", "day"],
+          ]),
     }));
 };

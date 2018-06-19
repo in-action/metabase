@@ -9,13 +9,9 @@ import Ellipsified from "metabase/components/Ellipsified.jsx";
 
 import cx from "classnames";
 
-// TODO: merge with BrowserCrumbs
-
 export default class Breadcrumbs extends Component {
   static propTypes = {
     className: PropTypes.string,
-    // each "crumb" is an array, the first index being the string title, the
-    // second index being a string URL or action function
     crumbs: PropTypes.array,
     inSidebar: PropTypes.bool,
     placeholder: PropTypes.string,
@@ -54,10 +50,10 @@ export default class Breadcrumbs extends Component {
                   breadcrumb.length > 1 ? S.breadcrumbPath : S.breadcrumbPage,
                 )}
               >
-                {breadcrumb.length > 1 && typeof breadcrumb[1] === "string" ? (
+                {breadcrumb.length > 1 ? (
                   <Link to={breadcrumb[1]}>{breadcrumb[0]}</Link>
                 ) : (
-                  <span onClick={breadcrumb[1]}>{breadcrumb[0]}</span>
+                  <span>{breadcrumb[0]}</span>
                 )}
               </Ellipsified>
             ))

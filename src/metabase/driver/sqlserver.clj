@@ -13,7 +13,6 @@
   (:import java.sql.Time))
 
 (defrecord SQLServerDriver []
-  :load-ns true
   clojure.lang.Named
   (getName [_] "SQL Server"))
 

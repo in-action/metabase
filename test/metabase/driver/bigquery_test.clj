@@ -44,6 +44,7 @@
        (sort-by first)
        (take 5)))
 
+
 ;; make sure that BigQuery native queries maintain the column ordering specified in the SQL -- post-processing
 ;; ordering shouldn't apply (Issue #2821)
 (expect-with-engine :bigquery

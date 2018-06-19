@@ -14,9 +14,6 @@ type Props = {
 } & FormattingOptions;
 
 const Value = ({ value, ...options }: Props) => {
-  if (options.hide) {
-    return null;
-  }
   if (options.remap) {
     return <RemappedValue value={value} {...options} />;
   }

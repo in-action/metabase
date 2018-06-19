@@ -67,7 +67,6 @@
           :dest-column-name (:dest-column-name fk)})))
 
 (defrecord RedshiftDriver []
-  :load-ns true
   clojure.lang.Named
   (getName [_] "Amazon Redshift"))
 

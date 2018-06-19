@@ -15,10 +15,9 @@ import { getIn } from "icepick";
 // Helpers for defining drill-down progressions
 const CategoryDrillDown = type => [field => isa(field.special_type, type)];
 const DateTimeDrillDown = unit => [["datetime-field", isDate, unit]];
-
-const LatLonDrillDown = (binningStrategy, binWidth) => [
-  ["binning-strategy", isLatitude, binningStrategy, binWidth],
-  ["binning-strategy", isLongitude, binningStrategy, binWidth],
+const LatLonDrillDown = binWidth => [
+  ["binning-strategy", isLatitude, "bin-width", binWidth],
+  ["binning-strategy", isLongitude, "bin-width", binWidth],
 ];
 
 /**
@@ -42,26 +41,23 @@ const DEFAULT_DRILL_DOWN_PROGRESSIONS = [
     // CategoryDrillDown(TYPE.City)
   ],
   // Country, State, or City => LatLon
-  [
-    CategoryDrillDown(TYPE.Country), //
-    LatLonDrillDown("bin-width", 10),
-  ],
-  [
-    CategoryDrillDown(TYPE.State), //
-    LatLonDrillDown("bin-width", 1),
-  ],
-  [
-    CategoryDrillDown(TYPE.City), //
-    LatLonDrillDown("bin-width", 0.1),
-  ],
+  [CategoryDrillDown(TYPE.Country), LatLonDrillDown(10)],
+  [CategoryDrillDown(TYPE.State), LatLonDrillDown(1)],
+  [CategoryDrillDown(TYPE.City), LatLonDrillDown(0.1)],
   // LatLon drill downs
   [
-    LatLonDrillDown("bin-width", (binWidth: number) => binWidth >= 20), //
-    LatLonDrillDown("bin-width", 10),
+    LatLonDrillDown(30),
+    LatLonDrillDown(10),
+    LatLonDrillDown(1),
+    LatLonDrillDown(0.1),
+    LatLonDrillDown(0.01),
   ],
   [
-    LatLonDrillDown("bin-width", () => true), //
-    LatLonDrillDown("bin-width", (binWidth: number) => binWidth / 10),
+    [
+      ["binning-strategy", isLatitude, "num-bins", () => true],
+      ["binning-strategy", isLongitude, "num-bins", () => true],
+    ],
+    LatLonDrillDown(1),
   ],
   // generic num-bins drill down
   [
@@ -76,7 +72,7 @@ const DEFAULT_DRILL_DOWN_PROGRESSIONS = [
         "binning-strategy",
         isAny,
         "bin-width",
-        (binWidth: number) => binWidth / 10,
+        (previous: number) => previous / 10,
       ],
     ],
   ],
