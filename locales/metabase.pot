@@ -13,7 +13,7 @@ msgstr ""
 "#-#-#-#-#  metabase-backend.pot (metabase)  #-#-#-#-#\n"
 "Project-Id-Version: metabase\n"
 "Report-Msgid-Bugs-To: docs@metabase.com\n"
-"POT-Creation-Date: 2018-06-20 05:35+0200\n"
+"POT-Creation-Date: 2018-06-21 06:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -222,6 +222,7 @@ msgstr ""
 #: frontend/src/metabase/admin/permissions/selectors.js:317
 #: frontend/src/metabase/admin/permissions/selectors.js:324
 #: frontend/src/metabase/admin/permissions/selectors.js:420
+#: frontend/src/metabase/nav/containers/Navbar.jsx:111
 #: frontend/src/metabase/reference/databases/DatabaseSidebar.jsx:18
 #: frontend/src/metabase/reference/databases/TableSidebar.jsx:18
 #: frontend/src/metabase/routes.jsx:377
@@ -875,6 +876,7 @@ msgstr ""
 
 #: frontend/src/metabase/admin/datamodel/containers/TableSettingsApp.jsx:91
 #: frontend/src/metabase/admin/settings/containers/SettingsEditorApp.jsx:274
+#: frontend/src/metabase/nav/containers/Navbar.jsx:96
 #: frontend/src/metabase/query_builder/components/template_tags/TagEditorSidebar.jsx:99
 #: frontend/src/metabase/routes.jsx:420
 msgid "Settings"
@@ -1081,6 +1083,7 @@ msgstr ""
 
 #: frontend/src/metabase/admin/people/containers/AdminPeopleApp.jsx:24
 #: frontend/src/metabase/admin/people/containers/PeopleListingApp.jsx:408
+#: frontend/src/metabase/nav/containers/Navbar.jsx:101
 #: frontend/src/metabase/routes.jsx:411
 msgid "People"
 msgstr ""
@@ -1219,6 +1222,7 @@ msgstr ""
 
 #: frontend/src/metabase/admin/permissions/components/PermissionsEditor.jsx:17
 #: frontend/src/metabase/admin/permissions/routes.jsx:12
+#: frontend/src/metabase/nav/containers/Navbar.jsx:116
 msgid "Permissions"
 msgstr ""
 
@@ -3118,6 +3122,7 @@ msgid "Saved by me"
 msgstr ""
 
 #: frontend/src/metabase/dashboards/containers/Dashboards.jsx:163
+#: frontend/src/metabase/nav/containers/Navbar.jsx:163
 #: frontend/src/metabase/routes.jsx:212 frontend/src/metabase/routes.jsx:217
 msgid "Dashboards"
 msgstr ""
@@ -4113,23 +4118,36 @@ msgstr ""
 msgid "Metabase Admin"
 msgstr ""
 
-#: frontend/src/metabase/nav/containers/Navbar.jsx:137
-msgid "Tableros"
+#: frontend/src/metabase/nav/containers/Navbar.jsx:106
+#: frontend/src/metabase/routes.jsx:383
+msgid "Data Model"
 msgstr ""
 
-#: frontend/src/metabase/nav/containers/Navbar.jsx:140
-msgid "Preguntas"
+#: frontend/src/metabase/nav/containers/Navbar.jsx:171
+#: frontend/src/metabase/routes.jsx:248
+msgid "Questions"
 msgstr ""
 
-#: frontend/src/metabase/nav/containers/Navbar.jsx:143
-msgid "Notificaciones"
+#: frontend/src/metabase/nav/containers/Navbar.jsx:179
+#: frontend/src/metabase/pulse/components/PulseList.jsx:46
+#: frontend/src/metabase/routes.jsx:363
+msgid "Pulses"
 msgstr ""
 
-#: frontend/src/metabase/nav/containers/Navbar.jsx:146
-msgid "Origenes de datos"
+#: frontend/src/metabase/nav/containers/Navbar.jsx:187
+#: frontend/src/metabase/query_builder/components/dataref/MainPane.jsx:12
+#: frontend/src/metabase/reference/databases/DatabaseSidebar.jsx:20
+#: frontend/src/metabase/reference/databases/FieldSidebar.jsx:34
+#: frontend/src/metabase/reference/databases/TableSidebar.jsx:23
+#: frontend/src/metabase/reference/guide/BaseSidebar.jsx:17
+#: frontend/src/metabase/reference/guide/BaseSidebar.jsx:19
+#: frontend/src/metabase/reference/metrics/MetricSidebar.jsx:20
+#: frontend/src/metabase/reference/segments/SegmentFieldSidebar.jsx:24
+#: frontend/src/metabase/reference/segments/SegmentSidebar.jsx:20
+msgid "Data Reference"
 msgstr ""
 
-#: frontend/src/metabase/nav/containers/Navbar.jsx:150
+#: frontend/src/metabase/nav/containers/Navbar.jsx:199
 #: frontend/src/metabase/routes.jsx:236
 msgid "New Question"
 msgstr ""
@@ -4628,11 +4646,6 @@ msgstr ""
 
 #: frontend/src/metabase/pulse/components/PulseEditSkip.jsx:24
 msgid "Skip a scheduled Pulse if none of its questions have any results"
-msgstr ""
-
-#: frontend/src/metabase/pulse/components/PulseList.jsx:46
-#: frontend/src/metabase/routes.jsx:363
-msgid "Pulses"
 msgstr ""
 
 #: frontend/src/metabase/pulse/components/PulseList.jsx:50
@@ -5370,18 +5383,6 @@ msgstr ""
 #: frontend/src/metabase/reference/databases/FieldDetail.jsx:51
 #: frontend/src/metabase/reference/segments/SegmentFieldDetail.jsx:39
 msgid "Number of {0} grouped by {1}"
-msgstr ""
-
-#: frontend/src/metabase/query_builder/components/dataref/MainPane.jsx:12
-#: frontend/src/metabase/reference/databases/DatabaseSidebar.jsx:20
-#: frontend/src/metabase/reference/databases/FieldSidebar.jsx:34
-#: frontend/src/metabase/reference/databases/TableSidebar.jsx:23
-#: frontend/src/metabase/reference/guide/BaseSidebar.jsx:17
-#: frontend/src/metabase/reference/guide/BaseSidebar.jsx:19
-#: frontend/src/metabase/reference/metrics/MetricSidebar.jsx:20
-#: frontend/src/metabase/reference/segments/SegmentFieldSidebar.jsx:24
-#: frontend/src/metabase/reference/segments/SegmentSidebar.jsx:20
-msgid "Data Reference"
 msgstr ""
 
 #: frontend/src/metabase/query_builder/components/dataref/MainPane.jsx:14
@@ -6446,10 +6447,6 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
-#: frontend/src/metabase/routes.jsx:248
-msgid "Questions"
-msgstr ""
-
 #: frontend/src/metabase/routes.jsx:252
 msgid "Search"
 msgstr ""
@@ -6457,10 +6454,6 @@ msgstr ""
 #: frontend/src/metabase/routes.jsx:347
 #: frontend/src/metabase/xray/containers/TableXRay.jsx:119
 msgid "XRay"
-msgstr ""
-
-#: frontend/src/metabase/routes.jsx:383
-msgid "Data Model"
 msgstr ""
 
 #: frontend/src/metabase/setup/components/DatabaseConnectionStep.jsx:125
